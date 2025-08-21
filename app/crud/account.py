@@ -1,3 +1,5 @@
+# app/crud/account.py
+
 import datetime
 from fastapi import HTTPException
 from pydantic import EmailStr
@@ -64,6 +66,7 @@ def validate_user(db: Session, email: str, password: str) -> User | None:
         logging.error(f"Unexpected error in validate_user: {e}")
         return None
 
+#-----------------------------------------------------------------------------------
 
 def validate_new_registered_user(db: Session, data:NewRegisteredUser) -> User | None:
     try:
@@ -119,6 +122,7 @@ def validate_new_registered_user(db: Session, data:NewRegisteredUser) -> User | 
         logging.error(f"Unexpected error in validate_user: {e}")
         return None
  
+ #-----------------------------------------------------------------------------------
    
 def register_user(db: Session, user: Register) -> str | None:
     try:
@@ -152,6 +156,7 @@ def register_user(db: Session, user: Register) -> str | None:
         logging.error(f"Unexpected error in validate_user: {e}")
         return None
 
+#-----------------------------------------------------------------------------------
 
 def create_new_user(db: Session, user:Register) -> int:
    # raw connection for low-level DBAPI cursor
@@ -177,6 +182,7 @@ def create_new_user(db: Session, user:Register) -> int:
     result = cursor.fetchone()
     return result.MemberCode if result else None
 
+#-----------------------------------------------------------------------------------
 
 def generate_html_email_body(email: str, name: str, code: str, first_name: str, device: str) -> str:
     app_name = settings.APP_NAME
@@ -218,6 +224,7 @@ def generate_html_email_body(email: str, name: str, code: str, first_name: str, 
     """
     return html_body.strip()
 
+#-----------------------------------------------------------------------------------
 
 def reset_password(db: Session, email:str) -> str:
     result_list = []
@@ -269,6 +276,7 @@ def reset_password(db: Session, email:str) -> str:
     else:
         return "fail"
     
+#-----------------------------------------------------------------------------------
 
 def html_body_text(email: str, name: str, code: str, app_name: str, website_link: str) -> str:
     return f"""
@@ -298,6 +306,8 @@ def html_body_text(email: str, name: str, code: str, app_name: str, website_link
     </table>
     """
 
+#-----------------------------------------------------------------------------------
+
 def is_reset_code_expired(db: Session, code:str) -> str:
     flist = db.query(TbForgotPwdCodes).filter(
         TbForgotPwdCodes.CodeId == code,
@@ -308,6 +318,7 @@ def is_reset_code_expired(db: Session, code:str) -> str:
     else:
         return "no"
     
+#-----------------------------------------------------------------------------------
 
 def change_password(db: Session, pwd:str, email:EmailStr, code: str) -> str:
     pwd_enc = encrypt(pwd)

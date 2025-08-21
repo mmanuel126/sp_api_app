@@ -1,5 +1,6 @@
 # app/schemas/account.py
 
+from datetime import datetime
 from pydantic import BaseModel, EmailStr
 
 class Login(BaseModel):
@@ -38,5 +39,7 @@ class NewRegisteredUser (BaseModel):
     code: str
 
 class CodeAndNameForgotPwdModel(BaseModel):
+    """holds code and name forgot password data"""
     codeID: str
     firstName: str
+

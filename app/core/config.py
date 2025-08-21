@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     ENCRYPTION_KEY: str
+    YOUTUBE_API_KEY: str
 
     APP_ADMIN: str
     APP_FROM_EMAIL: str

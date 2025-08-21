@@ -1,3 +1,5 @@
+#app/main.py
+
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
@@ -6,24 +8,78 @@ from fastapi import FastAPI, Security
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.openapi.utils import get_openapi
 
-from app.api.routes import account
+from app.api.routes import account, common, contact, member, message, setting
+from fastapi.middleware.cors import CORSMiddleware
 
 tags_metadata = [
     {
         "name": "Account",
         "description": "This is a list of interfaces containing account functionalities such as login and registering users.",
-    }
+    },
+    {
+        "name": "Common",
+        "description": "This is a collection of common interfaces and shared functionalities used by the SP.",
+    },
+    {
+        "name": "Contact",
+        "description": "Contains API functionalities to manage and control member contacts.",
+    },
+    {
+        "name": "Member",
+        "description": "Contains member management API functionalities.",
+    },
+    {
+        "name": "Message",
+        "description": "Contains API functionalities for messaging or communication between members.",
+    },
+    {
+        "name": "Setting",
+        "description": "This is a list of interfaces to manage application settings and user preferences.",
+    },
 ]
 
 # define the API application instance  - starting point to the app.
 app = FastAPI(
     title="Sport Profles API",
-    description="RESTful API web service for the Sports Profile (SP) social networking application.<br/><br/>Author: Marc Manuel<br/><br/>Note: this version uses Python 3.9, fastAPI, and SQLAlchemy with a SQL Server database.<br/>To experiment with the API functionalities, please send email to <b>marc_manuel@hotmail.com</b> to obtain test account and instructions.",
+    description="""RESTful API web service for the Sports Profile (SP) social networking application.<br/><br/>
+Author: <b>Marc Manuel</b> (https://www.linkedin.com/in/marc-manuel-b298326/)<br/><br/>
+Note: This version uses Python 3.9, fastAPI, and SQLAlchemy with a SQL Server database.<br/>
+<div>
+  <h3>Quick Start with Swagger</h3>
+  <ol>
+    <li>Go to <code>/api/account/Login</code> under the <strong>Account</strong> service.</li>
+    <li>Login with:
+      <ul>
+        <li><strong>Email:</strong> <code>michael.jordan@outlook.com</code></li>
+        <li><strong>Password:</strong> <code>123456</code></li>
+      </ul>
+    </li>
+    <li>Copy the JWT token from the response.</li>
+    <li>Click <strong>"Authorize"</strong> and enter:
+      <pre><code>&lt;your_JWT_token&gt;</code></pre>
+    </li>
+    <li>You're now ready to access secured endpoints.</li>
+  </ol>
+</div>
+<p>You can also create an account using the <a href="https://react-sport-profiles.vercel.app/login" target="_blank">React web application</a> that consumes this API service.</p>
+""", 
     version="1.0.0",
     docs_url="/docs",       # Default Swagger UI
     redoc_url="/redoc",     # ReDoc UI
     openapi_url="/openapi.json",  # JSON schema
-    openapi_tags=tags_metadata
+    openapi_tags=tags_metadata,
+    swagger_ui_parameters={
+        "docExpansion": "none",                # Collapse all endpoints
+        "defaultModelsExpandDepth": 1        # do not Hide models section but don't expand
+    }
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or set specific domains ["http://localhost:3000"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
@@ -57,3 +113,8 @@ def custom_openapi():
 app.openapi = custom_openapi
 
 app.include_router(account.router, prefix="/api")
+app.include_router(common.router, prefix="/api")
+app.include_router(contact.router, prefix="/api")
+app.include_router(member.router, prefix="/api")
+app.include_router(message.router, prefix="/api")
+app.include_router(setting.router, prefix="/api")

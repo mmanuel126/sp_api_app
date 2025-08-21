@@ -10,8 +10,9 @@ from jose import JWTError, jwt
 from app.core.config import settings
 from app.utils.jwt import create_access_token
 
-
 router = APIRouter(prefix="/account", tags=["Account"])
+
+#-----------------------------------------------------------------------------------
 
 @router.post("/login",response_model=User,
     summary="Log user in and create JWT token.",
@@ -19,11 +20,15 @@ router = APIRouter(prefix="/account", tags=["Account"])
 )
 def login(data: Login, db: Session = Depends(get_db)):
     # Authenticate user and create token
-    user = validate_user(db, data.email, data.password)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found or credentials invalid")
-    return user
+    try:
+        user = validate_user(db, data.email, data.password)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found or credentials invalid")
+        return user
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
+#-----------------------------------------------------------------------------------
 
 @router.post("/loginNewRegisteredUser",response_model=User,
     summary="Login new registered user with a code.",
@@ -31,11 +36,15 @@ def login(data: Login, db: Session = Depends(get_db)):
 )
 def loginNewRegisteredUser(data: NewRegisteredUser, db: Session=Depends(get_db)):
     # logs in newly registered user
-    user = validate_new_registered_user(db,data)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found or credentials invalid")
-    return user
+    try:
+        user = validate_new_registered_user(db,data)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found or credentials invalid")
+        return user
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
+#-----------------------------------------------------------------------------------
 
 @router.get("/refreshLogin",
     summary="Refreshes a given token.",
@@ -56,10 +65,10 @@ def refreshLogin(refresh_token: str = Query(..., description="JWT refresh token 
             "accessToken": token_data["access_token"],
             "expiredDate": token_data["expire_date"]
         }
-
     except JWTError as e:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
 
+#-----------------------------------------------------------------------------------
 
 @router.post("/register",
     summary="Register a new user.",
@@ -67,11 +76,15 @@ def refreshLogin(refresh_token: str = Query(..., description="JWT refresh token 
 )
 def register(data: Register, db: Session = Depends(get_db)):
     # Register user
-    response_str = register_user(db,data)
-    if not response_str:
-        raise HTTPException(status_code=404, detail="User not found or credentials invalid")
-    return response_str
+    try:
+        response_str = register_user(db,data)
+        if not response_str:
+            raise HTTPException(status_code=404, detail="User not found or credentials invalid")
+        return response_str
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
+#-----------------------------------------------------------------------------------
 
 @router.get("/resetPassword",
     summary="Reset the passwored.",
@@ -79,11 +92,15 @@ def register(data: Register, db: Session = Depends(get_db)):
 )
 def resetPassword(email: str,db: Session = Depends(get_db)):
     # Reset password
-    response_str = reset_password(db,email)
-    if not response_str:
-        raise HTTPException(status_code=500, detail="resseting password error.")
-    return response_str  #success or fail
+    try:
+        response_str = reset_password(db,email)
+        if not response_str:
+            raise HTTPException(status_code=500, detail="resseting password error.")
+        return response_str  #success or fail
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
+#-----------------------------------------------------------------------------------
 
 @router.get("/isResetCodeExpired",
     summary="Check if reset code expired.",
@@ -91,11 +108,15 @@ def resetPassword(email: str,db: Session = Depends(get_db)):
 )
 def isResetCodeExpired(code: str, db: Session = Depends(get_db)):
     # checks to see if code has expired
-    response_str = is_reset_code_expired(db,code)
-    if not response_str:
-        raise HTTPException(status_code=500, detail="checking if code expired unexpected error.")
-    return response_str  #yes or no
+    try:
+        response_str = is_reset_code_expired(db,code)
+        if not response_str:
+            raise HTTPException(status_code=500, detail="checking if code expired unexpected error.")
+        return response_str  #yes or no
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
+#-----------------------------------------------------------------------------------
 
 @router.get("/changePassword",
     summary="Changes the password.",
@@ -105,4 +126,9 @@ def changePassword(new_password: str,
      email: EmailStr ,
      code: str, db: Session = Depends(get_db)):
     # change password
-    return change_password(db, new_password,email,code)
+    try:
+        return change_password(db, new_password,email,code)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+#-----------------------------------------------------------------------------------
