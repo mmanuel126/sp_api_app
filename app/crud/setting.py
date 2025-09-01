@@ -135,6 +135,7 @@ def set_security_question(db:Session, member_id:int, question_id:int, answer:str
 def set_deactivate_account(db:Session, member_id:int, reason:int, explanation:str, future_email:bool) -> None:
     q = db.query(TbMembers).filter(TbMembers.MemberID == member_id).first()
     if q:
+       q.Status = 3
        q.DeactivateReason = reason
        q.DeactivateExplanation = explanation
        q.FutureEmails = future_email

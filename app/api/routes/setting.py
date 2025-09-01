@@ -1,6 +1,8 @@
 # app/api/routes/setting.py
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Query
+import shutil
+from fastapi import APIRouter, Body, Depends, File, HTTPException, Path, Query, UploadFile
+from fastapi.responses import JSONResponse
 from pytest import Session
 
 from app.auth.dependencies import get_current_user
@@ -10,6 +12,8 @@ from app.schemas.setting import MemberNameInfo, NotificationsSetting, PrivacySea
 
 
 router = APIRouter(prefix="/setting", tags=["Setting"])
+
+UPLOAD_FOLDER = "images/members"
 
 #-----------------------------------------------------------------------------------
 
@@ -193,15 +197,43 @@ def profile_search_settings(member_id:int, db: Session = Depends(get_db),current
 )
 def profile_settings(member_id:int, db: Session = Depends(get_db),current_user: str = Depends(get_current_user),
             visibility:int = Query(...), view_profile_picture:bool= Query(...), 
-        view_friends_list:bool = Query(...), view_link_to_Rquest_adding_you_as_friend:bool= Query(...),
+        view_friends_list:bool = Query(...), view_link_to_request_adding_you_as_friend:bool= Query(...),
             view_link_to_send_you_msg:bool = Query(...)):
     try:
         set_privacy_search_settings(member_id, db,
             visibility, view_profile_picture, 
-            view_friends_list, view_link_to_Rquest_adding_you_as_friend,
+            view_friends_list, view_link_to_request_adding_you_as_friend,
             view_link_to_send_you_msg)
         return {"message": "Saved privacy search settings successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
 #-----------------------------------------------------------------------------------
+
+@router.post("/upload-photo/{member_id}")
+async def upload_profile_photo(
+    member_id: str,  
+    image: UploadFile = File(...)  
+):
+    try:
+        # Get file extension
+        filename_parts = image.filename.split(".")
+        if len(filename_parts) < 2:
+            raise HTTPException(status_code=400, detail="Invalid file name.")
+        ext = filename_parts[-1]
+
+        # Build path
+        root_path = Path(__file__).resolve().parent.parent  
+        save_dir = "/Users/marcmanuel/projects/api/sp_api_app" / "static" / UPLOAD_FOLDER
+        save_dir.mkdir(parents=True, exist_ok=True)
+
+        # Save file
+        new_filename = f"{member_id}.{ext}"
+        save_path = save_dir / new_filename
+
+        with open(save_path, "wb") as buffer:
+            shutil.copyfileobj(image.file, buffer)
+
+        return JSONResponse(status_code=200, content={"message": "File uploaded successfully."})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

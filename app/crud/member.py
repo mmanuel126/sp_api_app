@@ -2,6 +2,7 @@
 
 from datetime import datetime
 import os
+from fastapi import Depends
 import requests
 from sqlalchemy.orm import aliased
 from typing import List
@@ -9,6 +10,7 @@ from pytest import Session
 from sqlalchemy import func, select, text
 
 from app.db.models.sp_db_models import TbContacts, TbInterests, TbMemberFollowing, TbMemberPostResponses, TbMemberPosts, TbMemberProfileContactInfo, TbMemberProfileEducationV2, TbMemberProfiles, TbMembers
+from app.db.session import get_db
 from app.schemas.member import ContactInfo, EducationInfo, GeneralInfo, PostResponses, Posts, YoutubeChannel, YoutubePlayList, YoutubeVideos, InstagramURL
 
 #-----------------------------------------------------------------------------------
@@ -363,10 +365,17 @@ def get_youtube_playlist(member_id: int, db:Session) -> List[YoutubePlayList]:
     playlists: List[YoutubePlayList] = []
 
     try:
-        channel_id = get_youtube_channel(member_id, db)
+        member = (
+        db.query(TbMembers).filter(TbMembers.MemberID == member_id).first())
+
+        if member:
+         channel_id = member.YoutubeChannel
+        else:
+            return "" 
 
         if channel_id:
             api_key = os.getenv("YOUTUBE_API_KEY", "")
+            print(api_key)
             url = "https://www.googleapis.com/youtube/v3/playlists"
             params = {
                 "part": "snippet",
@@ -386,34 +395,34 @@ def get_youtube_playlist(member_id: int, db:Session) -> List[YoutubePlayList]:
                 default_thumb = thumbnails.get("default", {})
 
                 playlist = YoutubePlayList(
-                    Id=item.get("id", ""),
-                    Title=snippet.get("title", ""),
-                    Description=snippet.get("description", ""),
-                    Etag=item.get("etag", ""),
-                    DefaultThumbnail=default_thumb.get("url", ""),
-                    DefaultThumbnailHeight=str(default_thumb.get("height", "") or "0"),
-                    DefaultThumbnailWidth=str(default_thumb.get("width", "") or "0")
+                    id=item.get("id", ""),
+                    title=snippet.get("title", ""),
+                    description=snippet.get("description", ""),
+                    etag=item.get("etag", ""),
+                    defaultThumbnail=default_thumb.get("url", ""),
+                    defaultThumbnailHeight=str(default_thumb.get("height", "") or "0"),
+                    defaultThumbnailWidth=str(default_thumb.get("width", "") or "0")
                 )
 
                 playlists.append(playlist)
-
+       
     except Exception as e:
         # Optional: log the exception
         print(f"Error fetching playlist: {e}")
-
+    
     return playlists
 
 
-def get_youtube_channel(member_id: int, db: Session) -> str:
-    member = (
-        db.query(TbMembers)
-        .filter(TbMembers.MemberID == member_id)
-        .first()
-    )
+# def get_youtube_channel(member_id: int, db: Session  = Depends(get_db)) -> str:
+#     member = (
+#         db.query(TbMembers)
+#         .filter(TbMembers.MemberID == member_id)
+#         .first()
+#     )
 
-    if member:
-        return member.YoutubeChannel or ""
-    return ""
+#     if member:
+#         return member.YoutubeChannel or ""
+#     return ""
 
 #-----------------------------------------------------------------------------------
 
@@ -443,7 +452,7 @@ def check_is_following_contact(db: Session, member_id:int, contact_id:int) -> bo
 
 #-----------------------------------------------------------------------------------
 
-def save_member_general_info(db: Session, save_info: GeneralInfo ):
+def set_member_general_info(db: Session, save_info: GeneralInfo ):
     sql = text("""
         EXEC spSaveMemberGeneralInfo 
             @MemberID=:MemberID, 

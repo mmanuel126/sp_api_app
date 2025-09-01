@@ -5,7 +5,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from pytest import Session
 
 from app.auth.dependencies import get_current_user
-from app.crud.member import add_member_school, check_is_following_contact, check_is_friend_by_contact_id, create_member_post, create_member_post_response, get_instagram_url, get_member_contact_info, get_member_education_info, get_member_general_info, get_recent_post_responses, get_recent_posts, get_videos_list, get_youtube_channel, get_youtube_playlist, set_increment_post_like_counter, set_instagram_url, set_member_contact_info, set_remove_school, set_youtube_channel, update_member_school
+from app.crud.member import add_member_school, check_is_following_contact, check_is_friend_by_contact_id, create_member_post, create_member_post_response, get_instagram_url, get_member_contact_info, get_member_education_info, get_member_general_info, get_recent_post_responses, get_recent_posts, get_videos_list, get_youtube_channel, get_youtube_playlist, set_increment_post_like_counter, set_instagram_url, set_member_contact_info, set_member_general_info, set_remove_school, set_youtube_channel, update_member_school
 from app.db.models.sp_db_models import TbMemberProfileContactInfo
 from app.db.session import get_db
 from app.schemas.member import ContactInfo, EducationInfo, GeneralInfo, PostResponses, Posts, YoutubeChannel, YoutubePlayList, YoutubeVideos, InstagramURL
@@ -136,7 +136,7 @@ def member_education_info(member_id:int, db: Session = Depends(get_db),current_u
     summary="Gets u tube vidoe playlist",
     description="This endpoint returns the list of u tube video playlist."
 )
-def youtube_playlist(member_id:str, db: Session = Depends(get_db),current_user: str = Depends(get_current_user)):
+def youtube_playlist(member_id:int, db: Session = Depends(get_db),current_user: str = Depends(get_current_user)):
     try:
         resp = get_youtube_playlist(member_id, db)
         if not resp:
@@ -148,7 +148,7 @@ def youtube_playlist(member_id:str, db: Session = Depends(get_db),current_user: 
 #-----------------------------------------------------------------------------------
 
 @router.get("/youtube-videos/{playlist_id}",response_model=List[YoutubeVideos],
-    summary="Gets the video list for a playerlist id",
+    summary="Gets the video list for a playerlist id.",
     description="This endpoint returns the list of youtube videos for a playerlist id."
 )
 def youtube_videos(playlist_id:str, db: Session = Depends(get_db),current_user: str = Depends(get_current_user)):
@@ -192,12 +192,15 @@ def is_following_contact(member_id, contact_id:int, db: Session = Depends(get_db
     summary="Saves or update the member general info.",
     description="This endpoint saves or update the member general information."
 )
-def saves_member_general_info(db: Session = Depends(get_db),current_user: str = Depends(get_current_user), data: GeneralInfo = Body(...)):
-    try:
-        get_member_general_info(db, data)
-        return {"message": "Saves general info successfully."}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+def saves_member_general_info(
+    data: GeneralInfo = Body(...), 
+    db: Session = Depends(get_db),
+    current_user: str = Depends(get_current_user)):
+     try:
+         set_member_general_info(db, data)
+         return {"message": "Saves general info successfully."}
+     except Exception as e:
+         raise HTTPException(status_code=500, detail=str(e))
     
 #-----------------------------------------------------------------------------------
 
@@ -233,7 +236,7 @@ def instagram_url(member_id:int, db: Session = Depends(get_db),current_user: str
     summary="Saves or update the member instagram url.",
     description="This endpoint saves or update the member instagram url."
 )
-def saves_instagram_url(db: Session = Depends(get_db),current_user: str = Depends(get_current_user), data: InstagramURL = Body(...)):
+def saves_instagram_url(data: InstagramURL = Body(...), db: Session = Depends(get_db),current_user: str = Depends(get_current_user)):
     try:
         set_instagram_url(db, data)
         return {"message": "Saves instagram url successfully."}
@@ -242,7 +245,7 @@ def saves_instagram_url(db: Session = Depends(get_db),current_user: str = Depend
     
 
 @router.get("/youtube-channel/{member_id}",response_model=str,
-    summary="Gets ithe youtube channel id for the member id.",
+    summary="Gets the youtube channel id for the member id.",
     description="This endpoint returns the youtube channel id for the member id."
 )
 def youtube_channel(member_id:int, db: Session = Depends(get_db),current_user: str = Depends(get_current_user)):
@@ -305,4 +308,5 @@ def remove_school(db: Session = Depends(get_db),current_user: str = Depends(get_
         return {"message": "Removed school successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))   
+    
     

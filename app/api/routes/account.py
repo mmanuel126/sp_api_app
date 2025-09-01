@@ -1,9 +1,10 @@
 # app/api/routes/account.py 
 
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import EmailStr
 from pytest import Session
-from app.crud.account import change_password, is_reset_code_expired, reset_password, validate_user, validate_new_registered_user, register_user
+from app.crud.account import change_password, is_reset_code_expired, reset_password, set_member_status, validate_user, validate_new_registered_user, register_user
 from app.db.session import get_db
 from app.schemas.account import Login, Register, NewRegisteredUser, User
 from jose import JWTError, jwt
@@ -14,23 +15,27 @@ router = APIRouter(prefix="/account", tags=["Account"])
 
 #-----------------------------------------------------------------------------------
 
-@router.post("/login",response_model=User,
+@router.post(
+    "/login",
+    response_model=User,
     summary="Log user in and create JWT token.",
-    description="This endpoint authenticates a user and returns a JWT access token for use in secured endpoints."
+    description="This endpoint authenticates a user and returns a JWT access token."
 )
 def login(data: Login, db: Session = Depends(get_db)):
-    # Authenticate user and create token
     try:
         user = validate_user(db, data.email, data.password)
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found or credentials invalid")
-        return user
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+    if not user:
+      return User()  # raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    return user
+
+
 #-----------------------------------------------------------------------------------
 
-@router.post("/loginNewRegisteredUser",response_model=User,
+@router.post("/login-new-registered-user",response_model=User,
     summary="Login new registered user with a code.",
     description="This endpoint logs in a newly registered user with a code to account and stores their credentials securely."
 )
@@ -46,7 +51,7 @@ def loginNewRegisteredUser(data: NewRegisteredUser, db: Session=Depends(get_db))
 
 #-----------------------------------------------------------------------------------
 
-@router.get("/refreshLogin",
+@router.get("/refresh-login",
     summary="Refreshes a given token.",
     description="Given an access token this endpoint refreshes it as it is expired to allow login."
 )
@@ -86,7 +91,7 @@ def register(data: Register, db: Session = Depends(get_db)):
 
 #-----------------------------------------------------------------------------------
 
-@router.get("/resetPassword",
+@router.post("/reset-password",
     summary="Reset the passwored.",
     description="This endpoint resets the password given an email."
 )
@@ -102,7 +107,7 @@ def resetPassword(email: str,db: Session = Depends(get_db)):
 
 #-----------------------------------------------------------------------------------
 
-@router.get("/isResetCodeExpired",
+@router.post("/is-reset-code-expired",
     summary="Check if reset code expired.",
     description="This endpoint checks if reset code is expired. Returns the string 'yes' if it is and 'no' if not."
 )
@@ -118,7 +123,7 @@ def isResetCodeExpired(code: str, db: Session = Depends(get_db)):
 
 #-----------------------------------------------------------------------------------
 
-@router.get("/changePassword",
+@router.post("/change-password",
     summary="Changes the password.",
     description="this endpoint will take new password encrypt it and replaces the old one with it."
 )
@@ -132,3 +137,16 @@ def changePassword(new_password: str,
         raise HTTPException(status_code=500, detail=str(e))
     
 #-----------------------------------------------------------------------------------
+@router.put("/set-member-status/{member_id}/{status}",
+    summary="Set member status.",
+    description="this endpoint will set the status (active=2, deactivated=3, newly-register=1) for the member id."
+)
+def member_status(member_id: int,
+     status:int ,
+     db: Session = Depends(get_db)):
+    # change password
+    try:
+        set_member_status(db, member_id,status)
+        return {"message": "Status updated successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

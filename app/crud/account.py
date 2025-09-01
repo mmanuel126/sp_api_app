@@ -1,6 +1,7 @@
 # app/crud/account.py
 
-import datetime
+#import datetime
+from datetime import datetime
 from fastapi import HTTPException
 from pydantic import EmailStr
 from sqlalchemy import text
@@ -13,12 +14,11 @@ import logging
 from app.utils.email import send_email
 from app.utils.jwt import create_access_token, create_refresh_token
 from app.core.config import settings 
+from sqlalchemy.orm import aliased
 
 def validate_user(db: Session, email: str, password: str) -> User | None:
     try:
         strPwd = encrypt(password)
-
-        from sqlalchemy.orm import aliased
 
         Profile = aliased(TbMemberProfiles)
 
@@ -34,7 +34,18 @@ def validate_user(db: Session, email: str, password: str) -> User | None:
         )
 
         if query is None:
-            return None
+            return User(
+                  memberID=str(0),
+            name="",
+            email=m.Email or "",
+            picturePath= "",
+            title= "",
+            currentStatus=str("0"),
+            accessToken="",
+            expiredDate="",
+            refreshToken="",
+            refreshExpireDate=""
+            )
 
         m, p = query
 
@@ -148,6 +159,7 @@ def register_user(db: Session, user: Register) -> str | None:
         subject = "Account confirmation"
         body = generate_html_email_body(user.email,full_name, code, user.firstName,"web")
         send_email("", from_email, to_email, subject, body, True)
+        return "NewEmail"
 
     except SQLAlchemyError as e:
         logging.error(f"Database error in validate_user: {e}")
@@ -158,29 +170,40 @@ def register_user(db: Session, user: Register) -> str | None:
 
 #-----------------------------------------------------------------------------------
 
-def create_new_user(db: Session, user:Register) -> int:
-   # raw connection for low-level DBAPI cursor
-    conn = db.connection().connection
-    cursor = conn.cursor()
-
-    member_code = cursor.execute("""
+def create_new_user(db: Session, user: Register) -> int:
+    stmt = text("""
         DECLARE @MemberCode INT;
         EXEC spCreateNewUser 
-            @FirstName = ?, 
-            @LastName = ?, 
-            @Email = ?, 
-            @Password = ?, 
-            @Gender = ?, 
-            @Month = ?, 
-            @Day = ?, 
-            @Year = ?, 
-            @ProfileType = ?, 
+            @FirstName = :FirstName,
+            @LastName = :LastName,
+            @Email = :Email,
+            @Password = :Password,
+            @Gender = :Gender,
+            @Month = :Month,
+            @Day = :Day,
+            @Year = :Year,
+            @ProfileType = :ProfileType,
             @MemberCode = @MemberCode OUTPUT;
-        SELECT @MemberCode as MemberCode;
-    """, user.firstname, user.lastname, user.email, user.password, user.gender, user.month, user.day, user.year, user.profileType)
+        SELECT @MemberCode AS MemberCode;
+    """)
 
-    result = cursor.fetchone()
-    return result.MemberCode if result else None
+    result = db.execute(
+        stmt,
+        {
+            "FirstName": user.firstName,
+            "LastName": user.lastName,
+            "Email": user.email,
+            "Password": user.password,
+            "Gender": user.gender,
+            "Month": user.month,
+            "Day": user.day,
+            "Year": user.year,
+            "ProfileType": user.profileType,
+        }
+    )
+
+    row = result.fetchone()
+    return row[0] if row else None
 
 #-----------------------------------------------------------------------------------
 
@@ -226,19 +249,19 @@ def generate_html_email_body(email: str, name: str, code: str, first_name: str, 
 
 #-----------------------------------------------------------------------------------
 
-def reset_password(db: Session, email:str) -> str:
+def reset_password(db: Session, email: str) -> str:
     result_list = []
+    # Avoid duplicate joins by using the relationship
+    MemberAlias = aliased(TbMembers)
 
-    # Join TbMembers and TbMemberProfiles
     profile = (
-        db.query(TbMemberProfiles)
-        .join(TbMembers, TbMemberProfiles.MemberID == TbMembers.MemberID)
-        .filter(TbMembers.Email == email)
-        .first()
-    )
+    db.query(TbMemberProfiles)
+    .join(MemberAlias, TbMemberProfiles.MemberID == MemberAlias.MemberID)
+    .filter(MemberAlias.Email == email)
+    .first()
+)
 
     if profile:
-        # Insert new forgot pwd code
         new_code = TbForgotPwdCodes(
             Email=email,
             CodeDate=datetime.utcnow(),
@@ -253,7 +276,6 @@ def reset_password(db: Session, email:str) -> str:
             firstName=profile.FirstName or ""
         ))
     else:
-        # Email not found
         result_list.append(CodeAndNameForgotPwdModel(
             codeID="0",
             firstName=""
@@ -266,11 +288,11 @@ def reset_password(db: Session, email:str) -> str:
 
         from_email = settings.APP_FROM_EMAIL
         to_email = email
-        #full_name = user.firstName + " " + user.lastName
         subject = "Password Reset confirmation"
         website_link = settings.WEBSITE_LINK
         app_name = settings.APP_NAME
-        body = html_body_text(email,first_name, code, app_name,website_link)
+        body = html_body_text(email, first_name, code, app_name, website_link)
+
         send_email(first_name, from_email, to_email, subject, body, True)
         return "success"
     else:
@@ -310,7 +332,7 @@ def html_body_text(email: str, name: str, code: str, app_name: str, website_link
 
 def is_reset_code_expired(db: Session, code:str) -> str:
     flist = db.query(TbForgotPwdCodes).filter(
-        TbForgotPwdCodes.CodeId == code,
+        TbForgotPwdCodes.CodeID == code,
         TbForgotPwdCodes.Status == 0
     ).all()
     if not flist:
@@ -325,20 +347,28 @@ def change_password(db: Session, pwd:str, email:EmailStr, code: str) -> str:
     #if code is not empty then set it to expire
     if code:
         fedit = db.query(TbForgotPwdCodes).filter(
-            TbForgotPwdCodes.CodeId == code
+            TbForgotPwdCodes.CodeID == code
          ).first()
         fedit.Status = 1
         db.commit()  
     #change the password    
-    sql = text("EXEC spChangePasswordViaEmail @Email=:email, @NewPwd=:pwd_enc")
+    sql = text("EXEC spChangePasswordViaEmail @Email=:email, @Password=:new_pwd")
     db.execute(sql, {"email": email, "new_pwd": pwd_enc})
     db.commit()   
     #return memberid:email if new email/pwd is validated
-    user = validate_user(email,pwd)
+    user = validate_user(db, email,pwd)
     if user:
         return f"{user.memberID}:{user.email}"
     else:
         return ""
+    
+#-----------------------------------------------------------------------------------
+
+def set_member_status(db: Session, member_id: int, status: int) -> None:
+    member = db.query(TbMembers).filter(TbMembers.MemberID == member_id).first()
+    if member:
+        member.Status = status
+        db.commit()    
 
 
 

@@ -1,7 +1,7 @@
 # app/api/routes/message.py 
 
 from typing import List
-from fastapi import APIRouter, Body, Depends, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, Request
 from pytest import Session
 
 from app.auth.dependencies import get_current_user
@@ -14,11 +14,11 @@ router = APIRouter(prefix="/message", tags=["Message"])
 
 #-----------------------------------------------------------------------------------
 
-@router.get("/messages",response_model=List[SearchMessages],
+@router.get("/messages/{member_id}",response_model=List[SearchMessages],
     summary="Returns list of member's messages.",
     description="This endpoint returns the list of messages given a member id."
 )
-def search_results(db: Session = Depends(get_db),current_user: str = Depends(get_current_user), member_id:int = Query(...), type:str  = Query(...), show_type:str  = Query(...)):
+def search_results(member_id:int, db: Session = Depends(get_db),current_user: str = Depends(get_current_user),type:str  = Query(...), show_type:str  = Query(...)):
     try:
         st = get_messages(db, member_id, type, show_type)
         if not st:
@@ -52,10 +52,10 @@ def send_message(db: Session = Depends(get_db),
 def toggle_message_state(db: Session = Depends(get_db),
                   current_user: str = Depends(get_current_user), 
                   status: int = Query(...),
-                  msgID: int = Query(...)
+                  msg_id: int = Query(...)
                   ):
     try:
-        set_toggle_message_state(db, status, msgID)
+        set_toggle_message_state(db, status, msg_id)
         return {"message": "Toggle message state successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

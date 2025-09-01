@@ -43,7 +43,7 @@ def people_iam_following(db: Session = Depends(get_db),current_user: str = Depen
 
 #-----------------------------------------------------------------------------------
 
-@router.get("/Whose-following-me",response_model=List[MemberContacts],
+@router.get("/whose-following-me",response_model=List[MemberContacts],
     summary="returns list of people following me.",
     description="This endpoint returns a list of members following me."
 )

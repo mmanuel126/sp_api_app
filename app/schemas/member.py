@@ -85,12 +85,12 @@ class YoutubeVideos(BaseModel):
 
 class YoutubePlayList(BaseModel):
     Etag : Optional[str] = None
-    Id : Optional[str] = None
-    Title : Optional[str] = None
-    Description : Optional[str] = None
-    DefaultThumbnail : Optional[str] = None
-    DefaultThumbnailHeight : Optional[str] = None
-    DefaultThumbnailWidth : Optional[str] = None
+    id : Optional[str] = None
+    title : Optional[str] = None
+    description : Optional[str] = None
+    defaultThumbnail : Optional[str] = None
+    defaultThumbnailHeight : Optional[str] = None
+    defaultThumbnailWidth : Optional[str] = None
 
 class ContactInfo(BaseModel):
     MemberID: Optional[int]= None

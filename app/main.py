@@ -10,6 +10,7 @@ from fastapi.openapi.utils import get_openapi
 
 from app.api.routes import account, common, contact, member, message, setting
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 tags_metadata = [
     {
@@ -73,6 +74,15 @@ Note: This version uses Python 3.9, fastAPI, and SQLAlchemy with a SQL Server da
         "defaultModelsExpandDepth": 1        # do not Hide models section but don't expand
     }
 )
+
+# use the commented code below to catch and log validatoin errors
+
+#@app.exception_handler(RequestValidationError)
+#async def custom_validation_handler(request: Request, exc: RequestValidationError):
+#    print("Validation error details:", exc.errors())
+#    return await request_validation_exception_handler(request, exc)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,

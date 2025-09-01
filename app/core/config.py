@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     APP_SMTP_PWD: str
     COMPLETE_REGISTRATION_LINK: str
     APP_NAME: str
+    WEBSITE_LINK: str
 
 
     class Config:

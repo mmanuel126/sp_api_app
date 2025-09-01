@@ -1,6 +1,7 @@
 # app/schemas/account.py
 
 from datetime import datetime
+from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 class Login(BaseModel):
@@ -10,16 +11,17 @@ class Login(BaseModel):
 
 class User(BaseModel):
     """ Holds the logged in user info."""
-    name: str
-    title: str
-    email: EmailStr
-    memberID: str
-    picturePath: str
-    currentStatus: str
-    accessToken: str
-    expiredDate: str
-    refreshToken: str
-    refreshExpireDate: str
+    memberID: Optional[str] = None
+    name: Optional[str] = None
+    email: Optional[str] = None
+    picturePath: Optional[str] = None
+    title: Optional[str] = None
+    currentStatus: Optional[str] = None
+    accessToken: Optional[str] = None
+    expiredDate: Optional[str] = None
+    refreshToken: Optional[str] = None
+    refreshExpireDate: Optional[str] = None
+   
 
 class Register (BaseModel):
     """Stores registered user info."""
