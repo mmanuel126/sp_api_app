@@ -1,18 +1,16 @@
-# app/api/routes/message.py 
+# app/api/routes/message.py - social networking app message related endpoints
 
 from typing import List
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, Request
 from pytest import Session
-
 from app.auth.dependencies import get_current_user
-#from app.crud.contact import set_send_request
 from app.crud.message import get_message_info, get_messages, get_searched_messages, get_total_unread_messages, set_delete_message, set_send_message, set_toggle_message_state
 from app.db.session import get_db
 from app.schemas.message import MessageInfo, SearchMessages
 
 router = APIRouter(prefix="/message", tags=["Message"])
 
-#-----------------------------------------------------------------------------------
+#-----------------------------------------list of member's messages------------------------------------------
 
 @router.get("/messages/{member_id}",response_model=List[SearchMessages],
     summary="Returns list of member's messages.",
@@ -27,7 +25,7 @@ def search_results(member_id:int, db: Session = Depends(get_db),current_user: st
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#------------------------------------post a message-----------------------------------------------
 
 @router.post("/send-message",
     summary="Create and send a message given msg info.",
@@ -43,7 +41,7 @@ def send_message(db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#-----------------------------------toggle message state (read or unread)------------------------------------------------
 
 @router.put("/toggle-message-state",
     summary="Toggles the state of the message.",
@@ -60,7 +58,7 @@ def toggle_message_state(db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#------------------------------------delete message-----------------------------------------------
 
 @router.delete("/delete/{message_id}",
     summary="Deletes the message id.",
@@ -75,7 +73,7 @@ def delete_message(message_id:int, db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#-------------------------------------total unread messages----------------------------------------------
 
 @router.get("/total-unread-messages/{member_id}",response_model=int,
     summary="Gets the total unread messages.",
@@ -90,7 +88,7 @@ def total_unread_messages(member_id:int, db: Session = Depends(get_db),current_u
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#---------------------------------------returns msg info for a msg id--------------------------------------------
 
 @router.get("/message-info/{message_id}",response_model=MessageInfo,
     summary="Returns a message info.",
@@ -105,7 +103,7 @@ def message_info(message_id:int, db: Session = Depends(get_db),current_user: str
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#--------------------------------------search messages---------------------------------------------
 
 @router.get("/search-messages/{member_id}",response_model=List[SearchMessages],
     summary="Returns list of member's searched messages.",

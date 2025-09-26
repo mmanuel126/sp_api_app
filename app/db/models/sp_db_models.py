@@ -1,696 +1,674 @@
-# /db/models/sp_db_models.py
+from typing import List, Optional
 
-from typing import Any, List, Optional
-
-from sqlalchemy import Boolean, Column, DateTime, ForeignKeyConstraint, Identity, Index, Integer, LargeBinary, PrimaryKeyConstraint, REAL, String, TEXT, Table, Unicode, text
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKeyConstraint, Identity, Integer, Numeric, PrimaryKeyConstraint, REAL, String, Table, Text, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy.sql.sqltypes import NullType
 import datetime
+import decimal
 
 class Base(DeclarativeBase):
     pass
 
 
-class Sysdiagrams(Base):
-    __tablename__ = 'sysdiagrams'
+class Tbads(Base):
+    __tablename__ = 'tbads'
     __table_args__ = (
-        PrimaryKeyConstraint('diagram_id', name='PK__sysdiagrams__0169315C'),
-        Index('UK_principal_name', 'principal_id', 'name', unique=True)
+        PrimaryKeyConstraint('id', name='tbads_pkey'),
     )
 
-    name: Mapped[str] = mapped_column(String(255))
-    principal_id: Mapped[int] = mapped_column(Integer)
-    diagram_id: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    version: Mapped[Optional[int]] = mapped_column(Integer)
-    definition: Mapped[Optional[bytes]] = mapped_column(LargeBinary)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    name: Mapped[Optional[str]] = mapped_column(String(150))
+    headertext: Mapped[Optional[str]] = mapped_column(String(150))
+    postingdate: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    textfield: Mapped[Optional[str]] = mapped_column(String(2000))
+    navigateurl: Mapped[Optional[str]] = mapped_column(String(200))
+    imageurl: Mapped[Optional[str]] = mapped_column(String(100))
+    type: Mapped[Optional[str]] = mapped_column(String(100))
 
 
-class TbAds(Base):
-    __tablename__ = 'tbAds'
+class Tbcolleges(Base):
+    __tablename__ = 'tbcolleges'
     __table_args__ = (
-        PrimaryKeyConstraint('ID', name='PK_tbAds'),
+        PrimaryKeyConstraint('school_id', name='tbcolleges_pkey'),
     )
 
-    ID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    Name: Mapped[Optional[str]] = mapped_column(String(150, 'SQL_Latin1_General_CP1_CI_AS'))
-    HeaderText: Mapped[Optional[str]] = mapped_column(String(150, 'SQL_Latin1_General_CP1_CI_AS'))
-    PostingDate: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
-    TextField: Mapped[Optional[str]] = mapped_column(String(2000, 'SQL_Latin1_General_CP1_CI_AS'))
-    NavigateURL: Mapped[Optional[str]] = mapped_column(String(200, 'SQL_Latin1_General_CP1_CI_AS'))
-    ImageUrl: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    Type: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
+    school_id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    name: Mapped[Optional[str]] = mapped_column(String(200))
+    address: Mapped[Optional[str]] = mapped_column(String(250))
+    phone: Mapped[Optional[str]] = mapped_column(String(50))
+    website: Mapped[Optional[str]] = mapped_column(String(150))
+    type: Mapped[Optional[str]] = mapped_column(String(250))
+    awards_offered: Mapped[Optional[str]] = mapped_column(String(500))
+    campus_setting: Mapped[Optional[str]] = mapped_column(String(90))
+    campus_housing: Mapped[Optional[str]] = mapped_column(String(150))
+    student_population: Mapped[Optional[int]] = mapped_column(BigInteger)
+    undergrad_students: Mapped[Optional[int]] = mapped_column(BigInteger)
+    Student_to_faculty_ratio: Mapped[Optional[str]] = mapped_column(String(50))
+    ipedsid: Mapped[Optional[str]] = mapped_column(String(150))
+    opeid: Mapped[Optional[str]] = mapped_column(String(50))
+    state: Mapped[Optional[str]] = mapped_column(String(10))
+    imagefile: Mapped[Optional[str]] = mapped_column(String(50))
 
 
-class TbColleges(Base):
-    __tablename__ = 'tbColleges'
+class Tbdays(Base):
+    __tablename__ = 'tbdays'
     __table_args__ = (
-        PrimaryKeyConstraint('SchoolID', name='PK_tbColleges'),
+        PrimaryKeyConstraint('day', name='tbdays_pkey'),
+        UniqueConstraint('day', name='tbdays_Day_key'),
+        UniqueConstraint('day', name='tbdays_day_key')
     )
 
-    SchoolID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    Name: Mapped[Optional[str]] = mapped_column(String(200, 'SQL_Latin1_General_CP1_CI_AS'))
-    Address: Mapped[Optional[str]] = mapped_column(String(250, 'SQL_Latin1_General_CP1_CI_AS'))
-    Phone: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    Website: Mapped[Optional[str]] = mapped_column(String(150, 'SQL_Latin1_General_CP1_CI_AS'))
-    Type: Mapped[Optional[str]] = mapped_column(String(250, 'SQL_Latin1_General_CP1_CI_AS'))
-    AwardsOffered: Mapped[Optional[str]] = mapped_column(String(500, 'SQL_Latin1_General_CP1_CI_AS'))
-    CampusSetting: Mapped[Optional[str]] = mapped_column(String(90, 'SQL_Latin1_General_CP1_CI_AS'))
-    CampusHousing: Mapped[Optional[str]] = mapped_column(String(150, 'SQL_Latin1_General_CP1_CI_AS'))
-    StudentPopulation: Mapped[Optional[int]] = mapped_column(Integer)
-    UnderGradStudents: Mapped[Optional[int]] = mapped_column(Integer)
-    StudentToFacultyRatio: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    IPEDSID: Mapped[Optional[str]] = mapped_column(String(150, 'SQL_Latin1_General_CP1_CI_AS'))
-    OPEID: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    State: Mapped[Optional[str]] = mapped_column(String(10, 'SQL_Latin1_General_CP1_CI_AS'))
-    ImageFile: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
+    day: Mapped[str] = mapped_column(String(2), primary_key=True)
 
 
-t_tbDays = Table(
-    'tbDays', Base.metadata,
-    Column('Day', String(2, 'SQL_Latin1_General_CP1_CI_AS'))
+class Tbdegreetype(Base):
+    __tablename__ = 'tbdegreetype'
+    __table_args__ = (
+        PrimaryKeyConstraint('degree_type_id', name='tbdegreetype_pkey'),
+        UniqueConstraint('degree_type_id', name='tbdegreetype_degree_type_id_key'),
+        UniqueConstraint('degree_type_id', name='tbdegreetype_DegreeTypeID_key')
+    )
+
+    degree_type_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    degree_type_desc: Mapped[Optional[str]] = mapped_column(String(50))
+
+
+class Tbforgotpwdcodes(Base):
+    __tablename__ = 'tbforgotpwdcodes'
+    __table_args__ = (
+        PrimaryKeyConstraint('code_id', name='tbforgotpwdcodes_pkey'),
+        UniqueConstraint('code_id', name='tbforgotpwdcodes_CodeID_key'),
+        UniqueConstraint('code_id', name='tbforgotpwdcodes_code_id_key')
+    )
+
+    code_id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    email: Mapped[Optional[str]] = mapped_column(String(100))
+    codedate: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    status: Mapped[Optional[int]] = mapped_column(BigInteger)
+
+
+class Tbinterests(Base):
+    __tablename__ = 'tbinterests'
+    __table_args__ = (
+        PrimaryKeyConstraint('interest_id', name='tbinterests_pkey'),
+        UniqueConstraint('interest_id', name='tbinterests_InterestID_key'),
+        UniqueConstraint('interest_id', name='tbinterests_interest_id_key')
+    )
+
+    interest_id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    interest_desc: Mapped[Optional[str]] = mapped_column(String(150))
+    interest_type: Mapped[Optional[str]] = mapped_column(String(20))
+
+
+class Tbmajors(Base):
+    __tablename__ = 'tbmajors'
+    __table_args__ = (
+        PrimaryKeyConstraint('major_id', name='tbmajors_pkey'),
+        UniqueConstraint('major_id', name='tbmajors_major_id_key'),
+        UniqueConstraint('major_id', name='tbmajors_MajorID_key')
+    )
+
+    major_id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    major_desc: Mapped[Optional[str]] = mapped_column(String(100))
+
+
+class Tbmemberfollowing(Base):
+    __tablename__ = 'tbmemberfollowing'
+    __table_args__ = (
+        PrimaryKeyConstraint('id', name='tbmemberfollowing_pkey'),
+        UniqueConstraint('id', name='tbmemberfollowing_id_key'),
+        UniqueConstraint('id', name='tbmemberfollowing_Id_key')
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    member_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    following_member_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+
+
+class Tbmembernotifications(Base):
+    __tablename__ = 'tbmembernotifications'
+    __table_args__ = (
+        PrimaryKeyConstraint('notification_member_id', 'member_id', 'notification_id', name='tbmembernotifications_pkey'),
+    )
+
+    notification_member_id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    member_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    notification_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+
+
+class Tbmemberprofileeducationv2(Base):
+    __tablename__ = 'tbmemberprofileeducationv2'
+    __table_args__ = (
+        PrimaryKeyConstraint('member_id', 'school_id', 'school_type', name='tbmemberprofileeducationv2_pkey'),
+    )
+
+    member_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    school_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    school_type: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    school_name: Mapped[Optional[str]] = mapped_column(String(100))
+    class_year: Mapped[Optional[str]] = mapped_column(String(10))
+    major: Mapped[Optional[str]] = mapped_column(String(100))
+    degree_type: Mapped[Optional[int]] = mapped_column(BigInteger)
+    societies: Mapped[Optional[str]] = mapped_column(String(300))
+    description: Mapped[Optional[str]] = mapped_column(String(200))
+    sport_level_type: Mapped[Optional[str]] = mapped_column(String(20))
+
+
+class Tbmemberprofilepictures(Base):
+    __tablename__ = 'tbmemberprofilepictures'
+    __table_args__ = (
+        PrimaryKeyConstraint('profile_id', 'member_id', name='tbmemberprofilepictures_pkey'),
+    )
+
+    profile_id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    member_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    file_name: Mapped[Optional[str]] = mapped_column(String(100))
+    is_default: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    removed: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+
+
+class Tbmembers(Base):
+    __tablename__ = 'tbmembers'
+    __table_args__ = (
+        PrimaryKeyConstraint('member_id', name='tbmembers_pkey'),
+        UniqueConstraint('member_id', name='tbmembers_MemberID_key'),
+        UniqueConstraint('member_id', name='tbmembers_member_id_key'),
+        {'schema': 'public'}
+    )
+
+    member_id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    email: Mapped[Optional[str]] = mapped_column(String(100))
+    password: Mapped[Optional[str]] = mapped_column(String(50))
+    status: Mapped[Optional[int]] = mapped_column(BigInteger)
+    security_question: Mapped[Optional[int]] = mapped_column(BigInteger)
+    security_answer: Mapped[Optional[str]] = mapped_column(String(50))
+    deactivate_reason: Mapped[Optional[int]] = mapped_column(BigInteger)
+    deactivate_explanation: Mapped[Optional[str]] = mapped_column(String(1000))
+    future_emails: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    chat_status: Mapped[Optional[int]] = mapped_column(BigInteger)
+    log_on: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    youtube_channel: Mapped[Optional[str]] = mapped_column(String(100))
+
+    tbcontactrequests: Mapped[List['Tbcontactrequests']] = relationship('Tbcontactrequests', foreign_keys='[Tbcontactrequests.from_member_id]', back_populates='from_member')
+    tbcontactrequests_: Mapped[List['Tbcontactrequests']] = relationship('Tbcontactrequests', foreign_keys='[Tbcontactrequests.to_member_id]', back_populates='to_member')
+    tbcontacts: Mapped[List['Tbcontacts']] = relationship('Tbcontacts', foreign_keys='[Tbcontacts.contact_id]', back_populates='contact')
+    tbcontacts_: Mapped[List['Tbcontacts']] = relationship('Tbcontacts', foreign_keys='[Tbcontacts.member_id]', back_populates='member')
+    tbmemberposts: Mapped[List['Tbmemberposts']] = relationship('Tbmemberposts', back_populates='member')
+    tbmembersprivacysettings: Mapped[List['Tbmembersprivacysettings']] = relationship('Tbmembersprivacysettings', back_populates='member')
+    tbmembersregistered: Mapped[List['Tbmembersregistered']] = relationship('Tbmembersregistered', back_populates='member')
+    tbmessages: Mapped[List['Tbmessages']] = relationship('Tbmessages', foreign_keys='[Tbmessages.contact_id]', back_populates='contact')
+    tbmessages_: Mapped[List['Tbmessages']] = relationship('Tbmessages', foreign_keys='[Tbmessages.sender_id]', back_populates='sender')
+    tbnotificationsettings: Mapped[List['Tbnotificationsettings']] = relationship('Tbnotificationsettings', back_populates='member')
+    tbmemberpostresponses: Mapped[List['Tbmemberpostresponses']] = relationship('Tbmemberpostresponses', back_populates='member')
+
+
+t_tbmonths = Table(
+    'tbmonths', Base.metadata,
+    Column('month', String(2)),
+    Column('desc', String(20))
 )
 
 
-class TbDegreeType(Base):
-    __tablename__ = 'tbDegreeType'
+class Tbnotifications(Base):
+    __tablename__ = 'tbnotifications'
     __table_args__ = (
-        PrimaryKeyConstraint('DegreeTypeID', name='PK_tbDegreeType'),
+        PrimaryKeyConstraint('notification_id', name='tbnotifications_pkey'),
+        UniqueConstraint('notification_id', name='tbnotifications_NotificationID_key'),
+        UniqueConstraint('notification_id', name='tbnotifications_notification_id_key')
     )
 
-    DegreeTypeID: Mapped[int] = mapped_column(Integer, primary_key=True)
-    DegreeTypeDesc: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
+    notification_id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    subject: Mapped[Optional[str]] = mapped_column(String(100))
+    notification: Mapped[Optional[str]] = mapped_column(String(2000))
+    sent_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    status: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
 
 
-class TbForgotPwdCodes(Base):
-    __tablename__ = 'tbForgotPwdCodes'
+class Tbprivateschools(Base):
+    __tablename__ = 'tbprivateschools'
     __table_args__ = (
-        PrimaryKeyConstraint('CodeID', name='PK_tbForgotPwdCodes'),
+        PrimaryKeyConstraint('lg_id', name='tbprivateschools_pkey'),
+        UniqueConstraint('lg_id', name='tbprivateschools_lg_id_key'),
+        UniqueConstraint('lg_id', name='tbprivateschools_LGId_key')
     )
 
-    CodeID: Mapped[int] = mapped_column(Integer, Identity(start=1000, increment=1), primary_key=True)
-    Email: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    CodeDate: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
-    Status: Mapped[Optional[int]] = mapped_column(Integer)
+    lg_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    pss_school_id: Mapped[Optional[str]] = mapped_column(String(255))
+    school_name: Mapped[Optional[str]] = mapped_column(String(255))
+    Lo_grade: Mapped[Optional[str]] = mapped_column(String(255))
+    hi_grade: Mapped[Optional[str]] = mapped_column(String(255))
+    street_name: Mapped[Optional[str]] = mapped_column(String(255))
+    city: Mapped[Optional[str]] = mapped_column(String(255))
+    pss_county_no: Mapped[Optional[str]] = mapped_column(String(255))
+    pss_county_fips: Mapped[Optional[str]] = mapped_column(String(255))
+    state: Mapped[Optional[str]] = mapped_column(String(255))
+    pss_fips: Mapped[Optional[str]] = mapped_column(String(255))
+    zip: Mapped[Optional[str]] = mapped_column(String(255))
+    phone: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_SCH_DAYS: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_STU_DAY_HRS: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_LIBRARY: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_UG: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_PK: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_K: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_1: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_2: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_3: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_4: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_5: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_6: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_7: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_8: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_9: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_10: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_11: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_12: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_T: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ENROLL_TK12: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_RACE_AI: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_RACE_AS: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_RACE_H: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_RACE_B: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_RACE_W: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_RACE_P: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_RACE_2: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_FTE_TEACH: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_LOCALE: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_COED: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_TYPE: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_LEVEL: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_RELIG: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_COMM_TYPE: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_INDIAN_PCT: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ASIAN_PCT: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_HISP_PCT: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_BLACK_PCT: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_WHITE_PCT: Mapped[Optional[str]] = mapped_column(String(255))
+    P_PACISL_PCT: Mapped[Optional[str]] = mapped_column(String(255))
+    P_TWOMORE_PCT: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_STDTCH_RT: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ORIENT: Mapped[Optional[str]] = mapped_column(String(255))
+    county: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ASSOC_1: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ASSOC_2: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ASSOC_3: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ASSOC_4: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ASSOC_5: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ASSOC_6: Mapped[Optional[str]] = mapped_column(String(255))
+    PSS_ASSOC_7: Mapped[Optional[str]] = mapped_column(String(255))
+    image_file: Mapped[Optional[str]] = mapped_column(String(255))
 
 
-class TbInterests(Base):
-    __tablename__ = 'tbInterests'
-    __table_args__ = (
-        PrimaryKeyConstraint('InterestID', name='PK_tbInterests'),
-    )
-
-    InterestID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    InterestDesc: Mapped[Optional[str]] = mapped_column(String(150, 'SQL_Latin1_General_CP1_CI_AS'))
-    InterestType: Mapped[Optional[str]] = mapped_column(String(20, 'SQL_Latin1_General_CP1_CI_AS'))
-
-
-class TbMajors(Base):
-    __tablename__ = 'tbMajors'
-    __table_args__ = (
-        PrimaryKeyConstraint('MajorID', name='PK_tbMajors'),
-    )
-
-    MajorID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    MajorDesc: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-
-
-class TbMemberFollowing(Base):
-    __tablename__ = 'tbMemberFollowing'
-    __table_args__ = (
-        PrimaryKeyConstraint('Id', name='PK_tbMemberFollowing'),
-    )
-
-    Id: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    MemberId: Mapped[Optional[int]] = mapped_column(Integer)
-    FollowingMemberId: Mapped[Optional[int]] = mapped_column(Integer)
-
-
-class TbMemberNotifications(Base):
-    __tablename__ = 'tbMemberNotifications'
-    __table_args__ = (
-        PrimaryKeyConstraint('NotificationMemberID', 'MemberID', 'NotificationID', name='PK_tbMemberNotifications'),
-    )
-
-    NotificationMemberID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    MemberID: Mapped[int] = mapped_column(Integer, primary_key=True)
-    NotificationID: Mapped[int] = mapped_column(Integer, primary_key=True)
-
-
-class TbMemberProfileEducationV2(Base):
-    __tablename__ = 'tbMemberProfileEducationV2'
-    __table_args__ = (
-        PrimaryKeyConstraint('MemberID', 'SchoolID', 'SchoolType', name='PK_tbMemberProfileEducationV2'),
-    )
-
-    MemberID: Mapped[int] = mapped_column(Integer, primary_key=True)
-    SchoolID: Mapped[int] = mapped_column(Integer, primary_key=True)
-    SchoolType: Mapped[int] = mapped_column(Integer, primary_key=True, comment='1 pub, 2 priv, 3 col')
-    SchoolName: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    ClassYear: Mapped[Optional[str]] = mapped_column(String(10, 'SQL_Latin1_General_CP1_CI_AS'))
-    Major: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    DegreeType: Mapped[Optional[int]] = mapped_column(Integer)
-    Societies: Mapped[Optional[str]] = mapped_column(String(300, 'SQL_Latin1_General_CP1_CI_AS'))
-    Description: Mapped[Optional[str]] = mapped_column(String(200, 'SQL_Latin1_General_CP1_CI_AS'))
-    SportLevelType: Mapped[Optional[str]] = mapped_column(String(20, 'SQL_Latin1_General_CP1_CI_AS'))
-
-
-class TbMemberProfilePictures(Base):
-    __tablename__ = 'tbMemberProfilePictures'
-    __table_args__ = (
-        PrimaryKeyConstraint('ProfileID', 'MemberID', name='PK_tbMemberProfilePictures'),
-    )
-
-    ProfileID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    MemberID: Mapped[int] = mapped_column(Integer, primary_key=True)
-    FileName: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    IsDefault: Mapped[Optional[bool]] = mapped_column(Boolean)
-    Removed: Mapped[Optional[bool]] = mapped_column(Boolean)
-
-
-class TbMembers(Base):
-    __tablename__ = 'tbMembers'
-    __table_args__ = (
-        PrimaryKeyConstraint('MemberID', name='PK_tbMembers'),
-    )
-
-    MemberID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    Email: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    Password: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    Status: Mapped[Optional[int]] = mapped_column(Integer, comment='1-NewlyRegistered,2-Active, 3-InActive')
-    SecurityQuestion: Mapped[Optional[int]] = mapped_column(Integer)
-    SecurityAnswer: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    DeactivateReason: Mapped[Optional[int]] = mapped_column(Integer)
-    DeactivateExplanation: Mapped[Optional[str]] = mapped_column(String(1000, 'SQL_Latin1_General_CP1_CI_AS'))
-    FutureEmails: Mapped[Optional[bool]] = mapped_column(Boolean)
-    ChatStatus: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((1))'), comment='1=available, 2=busy, 3=offline')
-    LogOn: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((0))'))
-    YoutubeChannel: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-
-    tbContactRequests: Mapped[List['TbContactRequests']] = relationship('TbContactRequests', foreign_keys='[TbContactRequests.FromMemberID]', back_populates='tbMembers')
-    tbContactRequests_: Mapped[List['TbContactRequests']] = relationship('TbContactRequests', foreign_keys='[TbContactRequests.ToMemberID]', back_populates='tbMembers_')
-    tbContacts: Mapped[List['TbContacts']] = relationship('TbContacts', foreign_keys='[TbContacts.ContactID]', back_populates='tbMembers')
-    tbContacts_: Mapped[List['TbContacts']] = relationship('TbContacts', foreign_keys='[TbContacts.MemberID]', back_populates='tbMembers_')
-    tbMemberPosts: Mapped[List['TbMemberPosts']] = relationship('TbMemberPosts', back_populates='tbMembers')
-    tbMembersPrivacySettings: Mapped[List['TbMembersPrivacySettings']] = relationship('TbMembersPrivacySettings', back_populates='tbMembers')
-    tbMembersRecentActivities: Mapped[List['TbMembersRecentActivities']] = relationship('TbMembersRecentActivities', back_populates='tbMembers')
-    tbMembersRegistered: Mapped[List['TbMembersRegistered']] = relationship('TbMembersRegistered', back_populates='tbMembers')
-    tbMessages: Mapped[List['TbMessages']] = relationship('TbMessages', foreign_keys='[TbMessages.ContactID]', back_populates='tbMembers')
-    tbMessages_: Mapped[List['TbMessages']] = relationship('TbMessages', foreign_keys='[TbMessages.SenderID]', back_populates='tbMembers_')
-    tbMessagesSent: Mapped[List['TbMessagesSent']] = relationship('TbMessagesSent', foreign_keys='[TbMessagesSent.ContactID]', back_populates='tbMembers')
-    tbMessagesSent_: Mapped[List['TbMessagesSent']] = relationship('TbMessagesSent', foreign_keys='[TbMessagesSent.SenderID]', back_populates='tbMembers_')
-    tbNotificationSettings: Mapped[List['TbNotificationSettings']] = relationship('TbNotificationSettings', back_populates='tbMembers')
-    tbMemberPostResponses: Mapped[List['TbMemberPostResponses']] = relationship('TbMemberPostResponses', back_populates='tbMembers')
-
-
-t_tbMonths = Table(
-    'tbMonths', Base.metadata,
-    Column('month', String(2, 'SQL_Latin1_General_CP1_CI_AS')),
-    Column('Desc', String(20, 'SQL_Latin1_General_CP1_CI_AS'))
+t_tbpublicschools = Table(
+    'tbpublicschools', Base.metadata,
+    Column('school_id', String(50)),
+    Column('state_school_id', String(50)),
+    Column('district_id', String(50)),
+    Column('state_district', String(100)),
+    Column('low_grade', String(50)),
+    Column('high_grade', String(50)),
+    Column('school_name', String(100)),
+    Column('district', String(100)),
+    Column('country_name', String(100)),
+    Column('street_name', String(100)),
+    Column('city', String(50)),
+    Column('state', String(20)),
+    Column('zip', String(10)),
+    Column('zip_4_digit', String(4)),
+    Column('phone', String(20)),
+    Column('local_code', String(50)),
+    Column('locale', String(50)),
+    Column('charter', String(50)),
+    Column('magnet', String(50)),
+    Column('titlle_1_school', String(50)),
+    Column('title_1_school_wide', String(50)),
+    Column('students', BigInteger),
+    Column('teachers', BigInteger),
+    Column('student_teacher_ratio', REAL),
+    Column('free_lunch', BigInteger),
+    Column('reduced_lunch', BigInteger),
+    Column('image_file', String(70)),
+    Column('lgid', BigInteger, nullable=False)
 )
 
 
-class TbNotifications(Base):
-    __tablename__ = 'tbNotifications'
+class Tbrecentnews(Base):
+    __tablename__ = 'tbrecentnews'
     __table_args__ = (
-        PrimaryKeyConstraint('NotificationID', name='PK_tbNotifications'),
+        PrimaryKeyConstraint('id', name='tbrecentnews_pkey'),
+        UniqueConstraint('id', name='tbrecentnews_ID_key'),
+        UniqueConstraint('id', name='tbrecentnews_id_key')
     )
 
-    NotificationID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    Subject: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    Notification: Mapped[Optional[str]] = mapped_column(String(2000, 'SQL_Latin1_General_CP1_CI_AS'))
-    SentDate: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
-    Status: Mapped[Optional[bool]] = mapped_column(Boolean)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    name: Mapped[Optional[str]] = mapped_column(String(150))
+    header_text: Mapped[Optional[str]] = mapped_column(String(150))
+    posting_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    text_field: Mapped[Optional[str]] = mapped_column(String(2000))
+    navigate_url: Mapped[Optional[str]] = mapped_column(String(200))
+    image_url: Mapped[Optional[str]] = mapped_column(String(100))
 
 
-class TbPrivateSchools(Base):
-    __tablename__ = 'tbPrivateSchools'
+class Tbschooltype(Base):
+    __tablename__ = 'tbschooltype'
     __table_args__ = (
-        PrimaryKeyConstraint('LGId', name='PK_tbPrivateSchools'),
+        PrimaryKeyConstraint('school_type_id', name='tbschooltype_pkey'),
+        UniqueConstraint('school_type_id', name='tbschooltype_school_type_id_key'),
+        UniqueConstraint('school_type_id', name='tbschooltype_SchoolTypeID_key')
     )
 
-    LGId: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    PSS_SCHOOL_ID: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    SchoolName: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    LoGrade: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    HiGrade: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    StreetName: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    City: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_COUNTY_NO: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_COUNTY_FIPS: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    State: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_FIPS: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    Zip: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    Phone: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_SCH_DAYS: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_STU_DAY_HRS: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_LIBRARY: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_UG: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_PK: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_K: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_1: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_2: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_3: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_4: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_5: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_6: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_7: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_8: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_9: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_10: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_11: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_12: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_T: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ENROLL_TK12: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_RACE_AI: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_RACE_AS: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_RACE_H: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_RACE_B: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_RACE_W: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_RACE_P: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_RACE_2: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_FTE_TEACH: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_LOCALE: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_COED: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_TYPE: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_LEVEL: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_RELIG: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_COMM_TYPE: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_INDIAN_PCT: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ASIAN_PCT: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_HISP_PCT: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_BLACK_PCT: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_WHITE_PCT: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    P_PACISL_PCT: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    P_TWOMORE_PCT: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_STDTCH_RT: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ORIENT: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    County: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ASSOC_1: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ASSOC_2: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ASSOC_3: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ASSOC_4: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ASSOC_5: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ASSOC_6: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    PSS_ASSOC_7: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
-    ImageFile: Mapped[Optional[str]] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'))
+    school_type_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    school_type_desc: Mapped[Optional[str]] = mapped_column(String(50))
 
 
-class TbPublicSchools(Base):
-    __tablename__ = 'tbPublicSchools'
+class Tbsports(Base):
+    __tablename__ = 'tbsports'
     __table_args__ = (
-        PrimaryKeyConstraint('LGID', name='PK_tbPublicSchools'),
+        PrimaryKeyConstraint('id', name='tbsports_pkey'),
+        UniqueConstraint('id', name='tbsports_id_key')
     )
 
-    LGID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    SchoolID: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    StateSchoolID: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    DistrictID: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    StateDistrict: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    LowGrade: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    HighGrade: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    SchoolName: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    District: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    CountryName: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    StreetName: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    City: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    State: Mapped[Optional[str]] = mapped_column(String(20, 'SQL_Latin1_General_CP1_CI_AS'))
-    Zip: Mapped[Optional[str]] = mapped_column(String(10, 'SQL_Latin1_General_CP1_CI_AS'))
-    Zip4Digit: Mapped[Optional[str]] = mapped_column(String(4, 'SQL_Latin1_General_CP1_CI_AS'))
-    Phone: Mapped[Optional[str]] = mapped_column(String(20, 'SQL_Latin1_General_CP1_CI_AS'))
-    localCode: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    locale: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    Charter: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    Magnet: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    Titlle1School: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    Title1SchoolWide: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    Students: Mapped[Optional[int]] = mapped_column(Integer)
-    Teachers: Mapped[Optional[int]] = mapped_column(Integer)
-    StudeintTeacherRatio: Mapped[Optional[float]] = mapped_column(REAL(24))
-    FreeLunch: Mapped[Optional[int]] = mapped_column(Integer)
-    ReducedLunch: Mapped[Optional[int]] = mapped_column(Integer)
-    ImageFile: Mapped[Optional[str]] = mapped_column(String(70, 'SQL_Latin1_General_CP1_CI_AS'))
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    name: Mapped[Optional[str]] = mapped_column(String(50))
 
 
-class TbRecentNews(Base):
-    __tablename__ = 'tbRecentNews'
+class Tbstates(Base):
+    __tablename__ = 'tbstates'
     __table_args__ = (
-        PrimaryKeyConstraint('ID', name='PK_tbRecentNews'),
+        PrimaryKeyConstraint('state_id', name='tbstates_pkey'),
+        UniqueConstraint('state_id', name='tbstates_state_id_key'),
+        UniqueConstraint('state_id', name='tbstates_StateID_key')
     )
 
-    ID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    Name: Mapped[Optional[str]] = mapped_column(String(150, 'SQL_Latin1_General_CP1_CI_AS'))
-    HeaderText: Mapped[Optional[str]] = mapped_column(String(150, 'SQL_Latin1_General_CP1_CI_AS'))
-    PostingDate: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
-    TextField: Mapped[Optional[str]] = mapped_column(String(2000, 'SQL_Latin1_General_CP1_CI_AS'))
-    NavigateURL: Mapped[Optional[str]] = mapped_column(String(200, 'SQL_Latin1_General_CP1_CI_AS'))
-    ImageUrl: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
+    state_id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    name: Mapped[Optional[str]] = mapped_column(String(50))
+    abbreviation: Mapped[Optional[str]] = mapped_column(String(5))
 
 
-class TbSchoolType(Base):
-    __tablename__ = 'tbSchoolType'
-    __table_args__ = (
-        PrimaryKeyConstraint('SchoolTypeID', name='PK_tbSchoolType'),
-    )
-
-    SchoolTypeID: Mapped[int] = mapped_column(Integer, primary_key=True)
-    SchoolTypeDesc: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-
-
-class TbSports(Base):
-    __tablename__ = 'tbSports'
-    __table_args__ = (
-        PrimaryKeyConstraint('id', name='PK_tbSports'),
-    )
-
-    id: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    Name: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-
-
-class TbStates(Base):
-    __tablename__ = 'tbStates'
-    __table_args__ = (
-        PrimaryKeyConstraint('StateID', name='PK_tbStates'),
-    )
-
-    StateID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    Name: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    Abbreviation: Mapped[Optional[str]] = mapped_column(String(5, 'SQL_Latin1_General_CP1_CI_AS'))
-
-
-t_tbYears = Table(
-    'tbYears', Base.metadata,
-    Column('Year', String(4, 'SQL_Latin1_General_CP1_CI_AS'))
+t_tbyears = Table(
+    'tbyears', Base.metadata,
+    Column('year', String(4))
 )
 
 
-class TbContactRequests(Base):
-    __tablename__ = 'tbContactRequests'
+class Tbcontactrequests(Base):
+    __tablename__ = 'tbcontactrequests'
     __table_args__ = (
-        ForeignKeyConstraint(['FromMemberID'], ['tbMembers.MemberID'], name='FK_tbContactRequests_tbMembers'),
-        ForeignKeyConstraint(['ToMemberID'], ['tbMembers.MemberID'], name='FK_tbContactRequests_tbMembers1'),
-        PrimaryKeyConstraint('RequestID', name='PK_tbFriendRequests')
+        ForeignKeyConstraint(['from_member_id'], ['public.tbmembers.member_id'], name='fk_tbcontactrequests_tbmembers'),
+        ForeignKeyConstraint(['to_member_id'], ['public.tbmembers.member_id'], name='fk_tbcontactrequests_tbmembers1'),
+        PrimaryKeyConstraint('request_id', name='tbcontactrequests_pkey'),
+        {'schema': 'public'}
     )
 
-    RequestID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    FromMemberID: Mapped[Optional[int]] = mapped_column(Integer)
-    ToMemberID: Mapped[Optional[int]] = mapped_column(Integer, comment='0-waiting, 1-accepted, 2-rejected')
-    RequestDate: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, server_default=text('(getdate())'))
-    Status: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((0))'))
+    request_id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    from_member_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    to_member_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    request_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    status: Mapped[Optional[int]] = mapped_column(BigInteger)
 
-    tbMembers: Mapped[Optional['TbMembers']] = relationship('TbMembers', foreign_keys=[FromMemberID], back_populates='tbContactRequests')
-    tbMembers_: Mapped[Optional['TbMembers']] = relationship('TbMembers', foreign_keys=[ToMemberID], back_populates='tbContactRequests_')
+    from_member: Mapped[Optional['Tbmembers']] = relationship('Tbmembers', foreign_keys=[from_member_id], back_populates='tbcontactrequests')
+    to_member: Mapped[Optional['Tbmembers']] = relationship('Tbmembers', foreign_keys=[to_member_id], back_populates='tbcontactrequests_')
 
 
-class TbContacts(Base):
-    __tablename__ = 'tbContacts'
+class Tbcontacts(Base):
+    __tablename__ = 'tbcontacts'
     __table_args__ = (
-        ForeignKeyConstraint(['ContactID'], ['tbMembers.MemberID'], name='FK_tbContacts_tbMembers1'),
-        ForeignKeyConstraint(['MemberID'], ['tbMembers.MemberID'], name='FK_tbContacts_tbMembers'),
-        PrimaryKeyConstraint('MemberID', 'ContactID', name='PK_tbFriends')
+        ForeignKeyConstraint(['contact_id'], ['public.tbmembers.member_id'], name='fk_tbcontacts_tbmembers1'),
+        ForeignKeyConstraint(['member_id'], ['public.tbmembers.member_id'], name='fk_tbcontacts_tbmembers'),
+        PrimaryKeyConstraint('member_id', 'contact_id', name='tbfriends_pkey'),
+        {'schema': 'public'}
     )
 
-    MemberID: Mapped[int] = mapped_column(Integer, primary_key=True)
-    ContactID: Mapped[int] = mapped_column(Integer, primary_key=True)
-    Status: Mapped[int] = mapped_column(Integer, server_default=text('((0))'), comment=' status (rejected=2, accepted=1, deleted=3, requested=0)')
-    DateStamp: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, server_default=text('(getdate())'))
+    member_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    contact_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    status: Mapped[int] = mapped_column(BigInteger)
+    datestamp: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
 
-    tbMembers: Mapped['TbMembers'] = relationship('TbMembers', foreign_keys=[ContactID], back_populates='tbContacts')
-    tbMembers_: Mapped['TbMembers'] = relationship('TbMembers', foreign_keys=[MemberID], back_populates='tbContacts_')
+    contact: Mapped['Tbmembers'] = relationship('Tbmembers', foreign_keys=[contact_id], back_populates='tbcontacts')
+    member: Mapped['Tbmembers'] = relationship('Tbmembers', foreign_keys=[member_id], back_populates='tbcontacts_')
 
 
-class TbMemberPosts(Base):
-    __tablename__ = 'tbMemberPosts'
+class Tbmemberposts(Base):
+    __tablename__ = 'tbmemberposts'
     __table_args__ = (
-        ForeignKeyConstraint(['MemberID'], ['tbMembers.MemberID'], name='FK_tbMemberPosts_tbMembers'),
-        PrimaryKeyConstraint('PostID', name='PK_tbPosts')
+        ForeignKeyConstraint(['member_id'], ['public.tbmembers.member_id'], name='fk_tbmemberposts_tbmembers'),
+        PrimaryKeyConstraint('post_id', name='tbmemberposts_pkey'),
+        UniqueConstraint('post_id', name='tbmemberposts_post_id_key'),
+        UniqueConstraint('post_id', name='tbmemberposts_PostID_key'),
+        {'schema': 'public'}
     )
 
-    PostID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    Title: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    Description: Mapped[Optional[str]] = mapped_column(String(700, 'SQL_Latin1_General_CP1_CI_AS'))
-    PostDate: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
-    AttachFile: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    MemberID: Mapped[Optional[int]] = mapped_column(Integer)
-    FileType: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((0))'), comment='1-photo, 2-video, 3-liink')
-    LikeCounter: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((0))'))
+    post_id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    title: Mapped[Optional[str]] = mapped_column(String(100))
+    description: Mapped[Optional[str]] = mapped_column(String(700))
+    post_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    attach_file: Mapped[Optional[str]] = mapped_column(String(100))
+    member_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    file_type: Mapped[Optional[int]] = mapped_column(BigInteger)
+    like_counter: Mapped[Optional[int]] = mapped_column(BigInteger)
 
-    tbMembers: Mapped[Optional['TbMembers']] = relationship('TbMembers', back_populates='tbMemberPosts')
-    tbMemberPostResponses: Mapped[List['TbMemberPostResponses']] = relationship('TbMemberPostResponses', back_populates='tbMemberPosts')
+    member: Mapped[Optional['Tbmembers']] = relationship('Tbmembers', back_populates='tbmemberposts')
+    tbmemberpostresponses: Mapped[List['Tbmemberpostresponses']] = relationship('Tbmemberpostresponses', back_populates='post')
 
 
-class TbMemberProfiles(TbMembers):
-    __tablename__ = 'tbMemberProfile'
+class Tbmemberprofile(Tbmembers):
+    __tablename__ = 'tbmemberprofile'
     __table_args__ = (
-        ForeignKeyConstraint(['MemberID'], ['tbMembers.MemberID'], name='FK_tbMemberProfile_tbMembers'),
-        PrimaryKeyConstraint('MemberID', name='PK_tbMemberProfiles')
+        ForeignKeyConstraint(['member_id'], ['public.tbmembers.member_id'], name='fk_tbmemberprofile_tbmembers'),
+        PrimaryKeyConstraint('member_id', name='tbmemberprofile_pkey'),
+        UniqueConstraint('member_id', name='tbmemberprofile_member_id_key'),
+        UniqueConstraint('member_id', name='tbmemberprofile_MemberID_key'),
+        {'schema': 'public'}
     )
 
-    MemberID: Mapped[int] = mapped_column(Integer, primary_key=True)
-    FirstName: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    MiddleName: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    LastName: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    Sex: Mapped[Optional[str]] = mapped_column(String(20, 'SQL_Latin1_General_CP1_CI_AS'))
-    ShowSexInProfile: Mapped[Optional[bool]] = mapped_column(Boolean)
-    DOBMonth: Mapped[Optional[str]] = mapped_column(String(3, 'SQL_Latin1_General_CP1_CI_AS'))
-    DOBDay: Mapped[Optional[str]] = mapped_column(String(3, 'SQL_Latin1_General_CP1_CI_AS'))
-    DOBYear: Mapped[Optional[str]] = mapped_column(String(5, 'SQL_Latin1_General_CP1_CI_AS'))
-    ShowDOBType: Mapped[Optional[bool]] = mapped_column(Boolean)
-    Hometown: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    HomeNeighborhood: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    CurrentStatus: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    InterestedInType: Mapped[Optional[int]] = mapped_column(Integer)
-    LookingForEmployment: Mapped[Optional[bool]] = mapped_column(Boolean)
-    LookingForRecruitment: Mapped[Optional[bool]] = mapped_column(Boolean)
-    LookingForPartnership: Mapped[Optional[bool]] = mapped_column(Boolean)
-    LookingForNetworking: Mapped[Optional[bool]] = mapped_column(Boolean)
-    PicturePath: Mapped[Optional[str]] = mapped_column(String(150, 'SQL_Latin1_General_CP1_CI_AS'))
-    JoinedDate: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
-    CurrentCity: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    TitleDesc: Mapped[Optional[str]] = mapped_column(String(200, 'SQL_Latin1_General_CP1_CI_AS'), server_default=text("('')"))
-    Sport: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    PreferredPosition: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    SecondaryPosition: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    LeftRightHandFoot: Mapped[Optional[str]] = mapped_column(String(30, 'SQL_Latin1_General_CP1_CI_AS'))
-    Height: Mapped[Optional[str]] = mapped_column(String(20, 'SQL_Latin1_General_CP1_CI_AS'))
-    Weight: Mapped[Optional[str]] = mapped_column(String(20, 'SQL_Latin1_General_CP1_CI_AS'))
-    Bio: Mapped[Optional[str]] = mapped_column(TEXT(16, 'SQL_Latin1_General_CP1_CI_AS'))
+    member_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    first_name: Mapped[Optional[str]] = mapped_column(String(50))
+    middle_name: Mapped[Optional[str]] = mapped_column(String(50))
+    last_name: Mapped[Optional[str]] = mapped_column(String(50))
+    sex: Mapped[Optional[str]] = mapped_column(String(20))
+    show_sex_in_profile: Mapped[Optional[bool]] = mapped_column(Boolean)
+    dob_month: Mapped[Optional[str]] = mapped_column(String(3))
+    dob_day: Mapped[Optional[str]] = mapped_column(String(3))
+    dob_year: Mapped[Optional[str]] = mapped_column(String(5))
+    show_dob_type: Mapped[Optional[bool]] = mapped_column(Boolean)
+    hometown: Mapped[Optional[str]] = mapped_column(String(50))
+    home_neighborhood: Mapped[Optional[str]] = mapped_column(String(50))
+    current_status: Mapped[Optional[str]] = mapped_column(String(50))
+    interested_in_type: Mapped[Optional[int]] = mapped_column(Integer)
+    looking_for_employment: Mapped[Optional[bool]] = mapped_column(Boolean)
+    looking_for_recruitment: Mapped[Optional[bool]] = mapped_column(Boolean)
+    looking_for_partnership: Mapped[Optional[bool]] = mapped_column(Boolean)
+    looking_for_networking: Mapped[Optional[bool]] = mapped_column(Boolean)
+    picture_path: Mapped[Optional[str]] = mapped_column(String(150))
+    joined_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    current_city: Mapped[Optional[str]] = mapped_column(String(50))
+    title_desc: Mapped[Optional[str]] = mapped_column(String(200))
+    sport: Mapped[Optional[str]] = mapped_column(String(50))
+    preferred_position: Mapped[Optional[str]] = mapped_column(String(50))
+    secondary_position: Mapped[Optional[str]] = mapped_column(String(50))
+    left_right_hand_foot: Mapped[Optional[str]] = mapped_column(String(30))
+    height: Mapped[Optional[str]] = mapped_column(String(20))
+    weight: Mapped[Optional[str]] = mapped_column(String(20))
+    bio: Mapped[Optional[str]] = mapped_column(Text)
 
 
-class TbMemberProfileContactInfo(Base):
-    __tablename__ = 'tbMemberProfileContactInfo'
+class Tbmemberprofilecontactinfo(Tbmembers):
+    __tablename__ = 'tbmemberprofilecontactinfo'
     __table_args__ = (
-        ForeignKeyConstraint(['MemberID'], ['tbMembers.MemberID'], name='FK_tbMemberProfileContactInfo_tbMembers'),
-        PrimaryKeyConstraint('MemberID', name='PK_tbMemberProfileContactInfo')
+        ForeignKeyConstraint(['member_id'], ['public.tbmembers.member_id'], name='fk_tbmemberprofilecontactinfo_tbmembers'),
+        PrimaryKeyConstraint('member_id', name='tbmemberprofilecontactinfo_pkey'),
+        UniqueConstraint('member_id', name='tbmemberprofilecontactinfo_member_id_key'),
+        UniqueConstraint('member_id', name='tbmemberprofilecontactinfo_MemberID_key'),
+        {'schema': 'public'}
     )
 
-    MemberID: Mapped[int] = mapped_column(Integer, primary_key=True)
-    Email: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    ShowEmailToMembers: Mapped[Optional[bool]] = mapped_column(Boolean)
-    OtherEmail: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    Facebook: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    Instagram: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    CellPhone: Mapped[Optional[str]] = mapped_column(String(20, 'SQL_Latin1_General_CP1_CI_AS'))
-    ShowCellPhone: Mapped[Optional[bool]] = mapped_column(Boolean)
-    HomePhone: Mapped[Optional[str]] = mapped_column(String(20, 'SQL_Latin1_General_CP1_CI_AS'))
-    ShowHomePhone: Mapped[Optional[bool]] = mapped_column(Boolean)
-    OtherPhone: Mapped[Optional[str]] = mapped_column(String(20, 'SQL_Latin1_General_CP1_CI_AS'))
-    Address: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    ShowAddress: Mapped[Optional[bool]] = mapped_column(Boolean)
-    City: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    State: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    Zip: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    Twitter: Mapped[Optional[str]] = mapped_column(String(300, 'SQL_Latin1_General_CP1_CI_AS'))
-    Website: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    Neighborhood: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
+    member_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    email: Mapped[Optional[str]] = mapped_column(String(100))
+    show_email_to_members: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    other_email: Mapped[Optional[str]] = mapped_column(String(100))
+    facebook: Mapped[Optional[str]] = mapped_column(String(100))
+    instagram: Mapped[Optional[str]] = mapped_column(String(100))
+    cell_phone: Mapped[Optional[str]] = mapped_column(String(20))
+    show_cell_phone: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    home_phone: Mapped[Optional[str]] = mapped_column(String(20))
+    show_home_phone: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    other_phone: Mapped[Optional[str]] = mapped_column(String(20))
+    address: Mapped[Optional[str]] = mapped_column(String(50))
+    show_address: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    city: Mapped[Optional[str]] = mapped_column(String(50))
+    state: Mapped[Optional[str]] = mapped_column(String(50))
+    zip: Mapped[Optional[str]] = mapped_column(String(50))
+    twitter: Mapped[Optional[str]] = mapped_column(String(300))
+    website: Mapped[Optional[str]] = mapped_column(String(100))
+    neighborhood: Mapped[Optional[str]] = mapped_column(String(50))
 
 
-class TbMemberProfilePersonalInfo(TbMembers):
-    __tablename__ = 'tbMemberProfilePersonalInfo'
+class Tbmemberprofilepersonalinfo(Tbmembers):
+    __tablename__ = 'tbmemberprofilepersonalinfo'
     __table_args__ = (
-        ForeignKeyConstraint(['MemberID'], ['tbMembers.MemberID'], name='FK_tbMemberProfilePersonalInfo_tbMembers'),
-        PrimaryKeyConstraint('MemberID', name='PK_tbMemberProfilePersonalInfo')
+        ForeignKeyConstraint(['member_id'], ['public.tbmembers.member_id'], name='fk_tbmemberprofilepersonalinfo_tbmembers'),
+        PrimaryKeyConstraint('member_id', name='tbmemberprofilepersonalinfo_pkey'),
+        UniqueConstraint('member_id', name='tbmemberprofilepersonalinfo_member_id_key'),
+        UniqueConstraint('member_id', name='tbmemberprofilepersonalinfo_MemberID_key'),
+        {'schema': 'public'}
     )
 
-    MemberID: Mapped[int] = mapped_column(Integer, primary_key=True)
-    Activities: Mapped[Optional[str]] = mapped_column(TEXT(16, 'SQL_Latin1_General_CP1_CI_AS'))
-    Interests: Mapped[Optional[str]] = mapped_column(TEXT(16, 'SQL_Latin1_General_CP1_CI_AS'))
-    FavoriteMusic: Mapped[Optional[str]] = mapped_column(TEXT(16, 'SQL_Latin1_General_CP1_CI_AS'))
-    FavoriteTVShows: Mapped[Optional[str]] = mapped_column(TEXT(16, 'SQL_Latin1_General_CP1_CI_AS'))
-    FavoriteMovies: Mapped[Optional[str]] = mapped_column(TEXT(16, 'SQL_Latin1_General_CP1_CI_AS'))
-    FavoriteBooks: Mapped[Optional[str]] = mapped_column(TEXT(16, 'SQL_Latin1_General_CP1_CI_AS'))
-    FavoriteQuotations: Mapped[Optional[str]] = mapped_column(TEXT(16, 'SQL_Latin1_General_CP1_CI_AS'))
-    AboutMe: Mapped[Optional[str]] = mapped_column(TEXT(16, 'SQL_Latin1_General_CP1_CI_AS'))
-    SpecialSkills: Mapped[Optional[str]] = mapped_column(TEXT(16, 'SQL_Latin1_General_CP1_CI_AS'))
+    member_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    activities: Mapped[Optional[str]] = mapped_column(Text)
+    interests: Mapped[Optional[str]] = mapped_column(Text)
+    favorite_music: Mapped[Optional[str]] = mapped_column(Text)
+    favorite_tv_shows: Mapped[Optional[str]] = mapped_column(Text)
+    favorite_movies: Mapped[Optional[str]] = mapped_column(Text)
+    favorite_books: Mapped[Optional[str]] = mapped_column(Text)
+    favorite_quotations: Mapped[Optional[str]] = mapped_column(Text)
+    about_me: Mapped[Optional[str]] = mapped_column(Text)
+    special_skills: Mapped[Optional[str]] = mapped_column(Text)
 
 
-class TbMembersPrivacySettings(Base):
-    __tablename__ = 'tbMembersPrivacySettings'
+class Tbmembersprivacysettings(Base):
+    __tablename__ = 'tbmembersprivacysettings'
     __table_args__ = (
-        ForeignKeyConstraint(['MemberID'], ['tbMembers.MemberID'], name='FK_tbMembersPrivacySettings_tbMembers'),
-        PrimaryKeyConstraint('ID', 'MemberID', name='PK_tbApplicationSettings')
+        ForeignKeyConstraint(['member_id'], ['public.tbmembers.member_id'], name='fk_tbmemberprivacysettings_tbmembers'),
+        PrimaryKeyConstraint('id', 'member_id', name='tbmembersprivacysettings_pkey'),
+        {'schema': 'public'}
     )
 
-    ID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    MemberID: Mapped[int] = mapped_column(Integer, primary_key=True)
-    Profile: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((3))'), comment='1-everyone, 2-friends of firends, 3- only friends, 4-only you')
-    BasicInfo: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((3))'))
-    PersonalInfo: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((3))'))
-    PhotosTagOfYou: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((3))'))
-    VideosTagOfYou: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((3))'))
-    ContactInfo: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((3))'))
-    Education: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((3))'))
-    WorkInfo: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((3))'))
-    IMDisplayName: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((3))'))
-    MobilePhone: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((3))'))
-    OtherPhone: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((3))'))
-    EmailAddress: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((3))'))
-    Visibility: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('((1))'))
-    ViewProfilePicture: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    ViewFriendsList: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    ViewLinkToRequestAddingYouAsFriend: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    ViewLinkToSendYouMsg: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    member_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    profile: Mapped[Optional[int]] = mapped_column(BigInteger)
+    basic_info: Mapped[Optional[int]] = mapped_column(BigInteger)
+    personal_info: Mapped[Optional[int]] = mapped_column(BigInteger)
+    photos_tag_of_you: Mapped[Optional[int]] = mapped_column(BigInteger)
+    videos_tag_of_you: Mapped[Optional[int]] = mapped_column(BigInteger)
+    contact_info: Mapped[Optional[int]] = mapped_column(BigInteger)
+    education: Mapped[Optional[int]] = mapped_column(BigInteger)
+    work_info: Mapped[Optional[int]] = mapped_column(BigInteger)
+    im_display_name: Mapped[Optional[int]] = mapped_column(BigInteger)
+    mobile_phone: Mapped[Optional[int]] = mapped_column(BigInteger)
+    other_phone: Mapped[Optional[int]] = mapped_column(BigInteger)
+    email_address: Mapped[Optional[int]] = mapped_column(BigInteger)
+    visibility: Mapped[Optional[int]] = mapped_column(BigInteger)
+    view_profile_picture: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    view_friends_list: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    view_link_to_request_adding_you_as_friend: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    view_link_to_send_you_msg: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
 
-    tbMembers: Mapped['TbMembers'] = relationship('TbMembers', back_populates='tbMembersPrivacySettings')
+    member: Mapped['Tbmembers'] = relationship('Tbmembers', back_populates='tbmembersprivacysettings')
 
 
-class TbMembersRecentActivities(Base):
-    __tablename__ = 'tbMembersRecentActivities'
+class Tbmembersregistered(Base):
+    __tablename__ = 'tbmembersregistered'
     __table_args__ = (
-        ForeignKeyConstraint(['MemberID'], ['tbMembers.MemberID'], name='FK_tbMembersRecentActivities_tbMembers'),
-        PrimaryKeyConstraint('ActivityID', name='PK_tbRecentActivities')
+        ForeignKeyConstraint(['member_id'], ['public.tbmembers.member_id'], name='fk_tbmembersregistered_tbmembers'),
+        PrimaryKeyConstraint('member_code_id', 'member_id', name='tbmembersregistered_pkey'),
+        UniqueConstraint('member_code_id', name='tbmembersregistered_member_code_id_key'),
+        UniqueConstraint('member_code_id', name='tbmembersregistered_MemberCodeID_key'),
+        {'schema': 'public'}
     )
 
-    ActivityID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    Description: Mapped[Optional[str]] = mapped_column(String(200, 'SQL_Latin1_General_CP1_CI_AS'))
-    ActivityDate: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
-    MemberID: Mapped[Optional[int]] = mapped_column(Integer)
-    ActivityTypeID: Mapped[Optional[int]] = mapped_column(Integer)
+    member_code_id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    member_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    registered_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
 
-    tbMembers: Mapped[Optional['TbMembers']] = relationship('TbMembers', back_populates='tbMembersRecentActivities')
+    member: Mapped['Tbmembers'] = relationship('Tbmembers', back_populates='tbmembersregistered')
 
 
-class TbMembersRegistered(Base):
-    __tablename__ = 'tbMembersRegistered'
+class Tbmessages(Base):
+    __tablename__ = 'tbmessages'
     __table_args__ = (
-        ForeignKeyConstraint(['MemberID'], ['tbMembers.MemberID'], name='FK_tbMembersRegistered_tbMembers'),
-        PrimaryKeyConstraint('MemberCodeID', 'MemberID', name='PK_tbRegisteredMembers')
+        ForeignKeyConstraint(['contact_id'], ['public.tbmembers.member_id'], name='fk_tbmessages_tbmembers1'),
+        ForeignKeyConstraint(['sender_id'], ['public.tbmembers.member_id'], name='fk_tbmessages_tbmembers'),
+        PrimaryKeyConstraint('message_id', name='tbmessages_pkey'),
+        UniqueConstraint('message_id', name='tbmessages_MessageID_key'),
+        UniqueConstraint('message_id', name='tbmessages_message_id_key'),
+        {'schema': 'public'}
     )
 
-    MemberCodeID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    MemberID: Mapped[int] = mapped_column(Integer, primary_key=True)
-    RegisteredDate: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    message_id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    message_state: Mapped[int] = mapped_column(BigInteger)
+    sender_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    contact_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    subject: Mapped[Optional[str]] = mapped_column(String(100))
+    body: Mapped[Optional[str]] = mapped_column(String(500))
+    msg_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    attachment: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    flag_level: Mapped[Optional[int]] = mapped_column(BigInteger)
+    importance_level: Mapped[Optional[int]] = mapped_column(BigInteger)
+    attachment_file: Mapped[Optional[str]] = mapped_column(String(150))
+    source: Mapped[Optional[str]] = mapped_column(String(50))
+    original_msg: Mapped[Optional[str]] = mapped_column(String(100))
 
-    tbMembers: Mapped['TbMembers'] = relationship('TbMembers', back_populates='tbMembersRegistered')
+    contact: Mapped[Optional['Tbmembers']] = relationship('Tbmembers', foreign_keys=[contact_id], back_populates='tbmessages')
+    sender: Mapped[Optional['Tbmembers']] = relationship('Tbmembers', foreign_keys=[sender_id], back_populates='tbmessages_')
 
 
-class TbMessages(Base):
-    __tablename__ = 'tbMessages'
+class Tbnotificationsettings(Base):
+    __tablename__ = 'tbnotificationsettings'
     __table_args__ = (
-        ForeignKeyConstraint(['ContactID'], ['tbMembers.MemberID'], name='FK_tbMessages_tbMembers1'),
-        ForeignKeyConstraint(['SenderID'], ['tbMembers.MemberID'], name='FK_tbMessages_tbMembers'),
-        PrimaryKeyConstraint('MessageID', name='PK_tbMessages')
+        ForeignKeyConstraint(['member_id'], ['public.tbmembers.member_id'], name='fk_tbnotificationsettings_tbmembers'),
+        PrimaryKeyConstraint('id', name='tbnotificationsettings_pkey'),
+        UniqueConstraint('id', name='tbnotificationsettings_ID_key'),
+        UniqueConstraint('id', name='tbnotificationsettings_id_key'),
+        {'schema': 'public'}
     )
 
-    MessageID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    MessageState: Mapped[int] = mapped_column(Integer)
-    SenderID: Mapped[Optional[int]] = mapped_column(Integer)
-    ContactID: Mapped[Optional[int]] = mapped_column(Integer)
-    Subject: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    Body: Mapped[Optional[str]] = mapped_column(String(500, 'SQL_Latin1_General_CP1_CI_AS'))
-    MsgDate: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
-    Attachment: Mapped[Optional[bool]] = mapped_column(Boolean)
-    FlagLevel: Mapped[Optional[int]] = mapped_column(Integer)
-    ImportanceLevel: Mapped[Optional[int]] = mapped_column(Integer)
-    AttachmentFile: Mapped[Optional[str]] = mapped_column(String(150, 'SQL_Latin1_General_CP1_CI_AS'))
-    Source: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    OriginalMsg: Mapped[Optional[str]] = mapped_column(String(collation='SQL_Latin1_General_CP1_CI_AS'))
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    member_id: Mapped[int] = mapped_column(BigInteger)
+    send_msg: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    add_as_friend: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    confirm_friendship_request: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    poking: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    confirm_friend_details: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    request_to_list_as_family: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    adds_friend_you_suggest: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    has_birthday_comingup: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    tag_In_Photo: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    tag_one_of_your_photos: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    tags_in_video: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    tags_one_of_your_videos: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    comment_on_video: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    comment_on_video_of_you: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    comment_after_you_in_video: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
+    replies_to_your_help_quest: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
 
-    tbMembers: Mapped[Optional['TbMembers']] = relationship('TbMembers', foreign_keys=[ContactID], back_populates='tbMessages')
-    tbMembers_: Mapped[Optional['TbMembers']] = relationship('TbMembers', foreign_keys=[SenderID], back_populates='tbMessages_')
+    member: Mapped['Tbmembers'] = relationship('Tbmembers', back_populates='tbnotificationsettings')
 
 
-class TbMessagesSent(Base):
-    __tablename__ = 'tbMessagesSent'
+class Tbmemberpostresponses(Base):
+    __tablename__ = 'tbmemberpostresponses'
     __table_args__ = (
-        ForeignKeyConstraint(['ContactID'], ['tbMembers.MemberID'], name='FK_tbMessagesSent_tbMembers1'),
-        ForeignKeyConstraint(['SenderID'], ['tbMembers.MemberID'], name='FK_tbMessagesSent_tbMembers'),
-        PrimaryKeyConstraint('MessageID', name='PK_tbSentMessages')
+        ForeignKeyConstraint(['member_id'], ['public.tbmembers.member_id'], name='fk_tbmemberpostresponses_tbmembers'),
+        ForeignKeyConstraint(['post_id'], ['public.tbmemberposts.post_id'], name='fk_tbmemberpostresponses_tbmemberposts'),
+        PrimaryKeyConstraint('post_response_id', name='tbmemberpostresponses_pkey'),
+        UniqueConstraint('post_response_id', name='tbmemberpostresponses_post_response_id_key'),
+        UniqueConstraint('post_response_id', name='tbmemberpostresponses_PostResponseID_key'),
+        {'schema': 'public'}
     )
 
-    MessageID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    SenderID: Mapped[Optional[int]] = mapped_column(Integer)
-    ContactID: Mapped[Optional[int]] = mapped_column(Integer)
-    Subject: Mapped[Optional[str]] = mapped_column(String(100, 'SQL_Latin1_General_CP1_CI_AS'))
-    Body: Mapped[Optional[str]] = mapped_column(String(500, 'SQL_Latin1_General_CP1_CI_AS'))
-    MsgDate: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
-    Attachment: Mapped[Optional[bool]] = mapped_column(Boolean)
-    MessageState: Mapped[Optional[int]] = mapped_column(Integer)
-    FlagLevel: Mapped[Optional[int]] = mapped_column(Integer)
-    ImportanceLevel: Mapped[Optional[int]] = mapped_column(Integer)
-    AttachmentFile: Mapped[Optional[str]] = mapped_column(String(150, 'SQL_Latin1_General_CP1_CI_AS'))
-    Source: Mapped[Optional[str]] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'))
-    OriginalMsg: Mapped[Optional[str]] = mapped_column(String(collation='SQL_Latin1_General_CP1_CI_AS'))
+    post_response_id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=9223372036854775807, cycle=False, cache=1), primary_key=True)
+    post_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    description: Mapped[Optional[str]] = mapped_column(String(500))
+    response_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    member_id: Mapped[Optional[int]] = mapped_column(BigInteger)
 
-    tbMembers: Mapped[Optional['TbMembers']] = relationship('TbMembers', foreign_keys=[ContactID], back_populates='tbMessagesSent')
-    tbMembers_: Mapped[Optional['TbMembers']] = relationship('TbMembers', foreign_keys=[SenderID], back_populates='tbMessagesSent_')
-
-
-class TbNotificationSettings(Base):
-    __tablename__ = 'tbNotificationSettings'
-    __table_args__ = (
-        ForeignKeyConstraint(['MemberID'], ['tbMembers.MemberID'], name='FK_tbNotificationSettings_tbMembers'),
-        PrimaryKeyConstraint('ID', 'MemberID', name='PK_tbNotificationSettings')
-    )
-
-    ID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    MemberID: Mapped[int] = mapped_column(Integer, primary_key=True)
-    LG_SendMsg: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    LG_AddAsFriend: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    LG_ConfirmFriendShipRequest: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    LG_Poking: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((0))'))
-    LG_ConfirmFriendDetails: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    LG_RequestToListAsFamily: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    LG_AddsFriendYouSuggest: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    LG_HasBirthDayComingUp: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((0))'))
-    PH_TagInPhoto: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    PH_TagOneOfYourPhotos: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    VI_TagsInVideo: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    VI_TagsOneOfYourVideos: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    VI_CommentOnVideo: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    VI_CommentOnVideoOfYou: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    VI_CommentAfterYouInVideo: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    GP_InviteYouToJoin: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    GP_PromoteToAdmin: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    GP_MakesYouAGPAdmin: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    GP_RequestToJoinGPYouAdmin: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    GP_RepliesToYourDiscBooardPost: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    GP_ChangesTheNameOfGroupYouBelong: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    EV_InviteToEvent: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    EV_DateChanged: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    EV_MakeYouEventAdmin: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    EV_RequestToJoinEventYouAdmin: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    NO_TagsYouInNote: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    NO_CommentYourNotes: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    NO_CommentAfterYouInNote: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    GI_SendYouGift: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-    HE_RepliesToYourHelpQuest: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('((1))'))
-
-    tbMembers: Mapped['TbMembers'] = relationship('TbMembers', back_populates='tbNotificationSettings')
-
-
-class TbMemberPostResponses(Base):
-    __tablename__ = 'tbMemberPostResponses'
-    __table_args__ = (
-        ForeignKeyConstraint(['MemberID'], ['tbMembers.MemberID'], name='FK_tbMemberPostResponses_tbMembers'),
-        ForeignKeyConstraint(['PostID'], ['tbMemberPosts.PostID'], name='FK_tbMemberPostResponses_tbMemberPosts'),
-        PrimaryKeyConstraint('PostResponseID', name='PK_tbPostResponses')
-    )
-
-    PostResponseID: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1), primary_key=True)
-    PostID: Mapped[Optional[int]] = mapped_column(Integer)
-    Description: Mapped[Optional[str]] = mapped_column(String(500, 'SQL_Latin1_General_CP1_CI_AS'))
-    ResponseDate: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
-    MemberID: Mapped[Optional[int]] = mapped_column(Integer)
-
-    tbMembers: Mapped[Optional['TbMembers']] = relationship('TbMembers', back_populates='tbMemberPostResponses')
-    tbMemberPosts: Mapped[Optional['TbMemberPosts']] = relationship('TbMemberPosts', back_populates='tbMemberPostResponses')
+    member: Mapped[Optional['Tbmembers']] = relationship('Tbmembers', back_populates='tbmemberpostresponses')
+    post: Mapped[Optional['Tbmemberposts']] = relationship('Tbmemberposts', back_populates='tbmemberpostresponses')

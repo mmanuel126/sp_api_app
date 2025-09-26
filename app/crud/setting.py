@@ -1,46 +1,52 @@
 # app/crud/setting.py
+# This module handles all user settings-related database operations, including:
+    # * Fetching and updating user profile info, privacy settings, notification preferences
+    # * Changing email, password, and security question
+    # * Deactivating accounts
+    # * Interacting with both ORM models and a stored procedure for profile privacy
 
 from typing import Optional
 from pytest import Session
 from sqlalchemy import text
 from sqlalchemy.orm import aliased
-
-from app.db.models.sp_db_models import TbMemberProfiles, TbMembers, TbMembersPrivacySettings, TbNotificationSettings
+from app.db.models.sp_db_models import Tbmemberprofile, Tbmembers, Tbmembersprivacysettings, Tbnotificationsettings
 from app.schemas.setting import MemberNameInfo, NotificationsSetting, PrivacySearchSettings
 from app.utils.crypto import encrypt
 
 #-----------------------------------------------------------------------------------
 
 def get_name_info(member_id: int, db: Session) -> Optional[MemberNameInfo]:
+    # Retrieves personal and account-related info for a given user.
+
     # Create aliases to prevent naming conflict
-    members = aliased(TbMembers)
-    profiles = aliased(TbMemberProfiles)
+    members = aliased(Tbmembers)
+    profiles = aliased(Tbmemberprofile)
 
     result = (
         db.query(
-            profiles.FirstName,
-            profiles.LastName,
-            profiles.MiddleName,
-            members.Email,
-            members.SecurityQuestion,
-            members.SecurityAnswer,
-            members.Password
+            profiles.first_name,
+            profiles.last_name,
+            profiles.middle_name,
+            members.email,
+            members.security_question,
+            members.security_answer,
+            members.password
         )
-        .join(profiles, members.MemberID == profiles.MemberID)
-        .filter(members.MemberID == member_id)
+        .join(profiles, members.member_id == profiles.member_id)
+        .filter(members.member_id == member_id)
         .first()
     )
 
     if result:
         first, last, middle, email, security_q, security_a, password = result
         return MemberNameInfo(
-            FirstName=first or "",
-            LastName=last or "",
-            MiddleName=middle or "",
-            Email=email or "",
-            SecurityQuestion=str(security_q) if security_q is not None else "",
-            SecurityAnswer=security_a or "",
-            PassWord=password or ""
+            first_name=first or "",
+            last_name=last or "",
+            middle_name=middle or "",
+            email=email or "",
+            security_question=str(security_q) if security_q is not None else "",
+            security_answer=security_a or "",
+            password=password or ""
         )
     
     return None
@@ -48,39 +54,39 @@ def get_name_info(member_id: int, db: Session) -> Optional[MemberNameInfo]:
 #-----------------------------------------------------------------------------------
 
 def get_notifications(member_id: int, db: Session) -> Optional[NotificationsSetting]:
+    #Fetches the user's notification preferences.
     result = (
         db.query(
-            TbNotificationSettings.MemberID,
-            TbNotificationSettings.LG_SendMsg,
-            TbNotificationSettings.LG_AddAsFriend,
-            TbNotificationSettings.LG_ConfirmFriendShipRequest,
-            TbNotificationSettings.HE_RepliesToYourHelpQuest
+            Tbnotificationsettings.member_id,
+            Tbnotificationsettings.send_msg,
+            Tbnotificationsettings.add_as_friend,
+            Tbnotificationsettings.confirm_friendship_request,
+            Tbnotificationsettings.replies_to_your_help_quest
         )
-        .filter(TbNotificationSettings.MemberID == member_id)
+        .filter(Tbnotificationsettings.member_id == member_id)
         .first()
     )
 
     if result:
         return NotificationsSetting(
-            MemberID=result.MemberID,
-            SendMsg=result.LG_SendMsg or False,
-            AddAsFriend=result.LG_AddAsFriend or False,
-            ConfirmFriendShipRequest=result.LG_ConfirmFriendShipRequest or False,
-            RepliesToYourHelpQuest=result.HE_RepliesToYourHelpQuest or False
+            member_id=result.member_id,
+            send_msg=result.send_msg or False,
+            add_as_friend=result.add_as_friend or False,
+            confirm_friendship_request=result.confirm_friendship_request or False,
+            replies_to_your_help_quest=result.replies_to_your_help_quest or False
         )
 
     return None
     
-#eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYXJjX21hbnVlbDJAaG90bWFpbC5jb20iLCJleHAiOjE3NTUzOTQ5NDl9.chmHh5GUX4YvC5Et_f2JP3FnI5LI_EjwTtVTRUrMaAI
-
 #-----------------------------------------------------------------------------------------------
 
 def set_update_name_info(db:Session, member_id:int, first_name:str, middle_name:str, last_name:str) -> None:
-    mem = db.query(TbMemberProfiles).filter(TbMemberProfiles.MemberID == member_id).first()
+    # Updates the user's first, middle, and last name.
+    mem = db.query(Tbmemberprofile).filter(Tbmemberprofile.member_id == member_id).first()
     if mem:
-        mem.LastName = last_name
-        mem.FirstName = first_name
-        mem.MiddleName = middle_name
+        mem.last_name = last_name
+        mem.first_name = first_name
+        mem.middle_name = middle_name
         db.commit()
     else:
         raise ValueError(f"Member with ID {member_id} not found.")
@@ -88,12 +94,13 @@ def set_update_name_info(db:Session, member_id:int, first_name:str, middle_name:
 #-----------------------------------------------------------------------------------------------
 
 def set_update_notifications(db:Session, member_id:int, body:NotificationsSetting) -> None:
-    ns = db.query(TbNotificationSettings).filter(TbNotificationSettings.MemberID == member_id).first()
+    # Updates the user’s notification settings (e.g., messages, friend requests).
+    ns = db.query(Tbnotificationsettings).filter(Tbnotificationsettings.member_id == member_id).first()
     if ns:
-        ns.LG_SendMsg = body.SendMsg
-        ns.LG_AddAsFriend = body.AddAsFriend
-        ns.LG_ConfirmFriendShipRequest = body.ConfirmFriendShipRequest
-        ns.HE_RepliesToYourHelpQuest = body.RepliesToYourHelpQuest
+        ns.send_msg = body.send_msg
+        ns.add_as_friend = body.add_as_friend
+        ns.confirm_friendship_request = body.confirm_friendship_request
+        ns.replies_to_your_help_quest = body.replies_to_your_help_quest
         db.commit()
     else:
         raise ValueError(f"Notification setting for ID {member_id} not found.")    
@@ -101,20 +108,26 @@ def set_update_notifications(db:Session, member_id:int, body:NotificationsSettin
 #-----------------------------------------------------------------------------------------------
 
 def set_update_email_info(db:Session, member_id:int, email:str) -> None:
-    q = db.query(TbMembers).filter(TbMembers.MemberID == member_id).first()
-    if q:
-       q.Email = email
-       db.commit()
-    else:
-        raise ValueError(f"Email change for ID {member_id} not found.")    
+    # Changes the user’s email address.
+    exist = db.query(Tbmembers).filter(Tbmembers.email == email).first() 
+    if exist: 
+       raise ValueError(f"This email already exist on the system. Cannot have duplicate emails.") 
+    else:   
+        q = db.query(Tbmembers).filter(Tbmembers.member_id == member_id).first()
+        if q:
+            q.email = email
+            db.commit()
+        else:
+            raise ValueError(f"Email change for ID {member_id} not found.")    
 
 #-----------------------------------------------------------------------------------------------
 
 def set_update_password_info(db:Session, member_id:int, password:str) -> None:
+    # Updates and encrypts the user’s password.
     encryptPwd = encrypt(password)
-    q = db.query(TbMembers).filter(TbMembers.MemberID == member_id).first()
+    q = db.query(Tbmembers).filter(Tbmembers.member_id == member_id).first()
     if q:
-       q.Password = encryptPwd
+       q.password = encryptPwd
        db.commit()
     else:
         raise ValueError(f"Password change for ID {member_id} not found.")    
@@ -122,23 +135,25 @@ def set_update_password_info(db:Session, member_id:int, password:str) -> None:
 #-----------------------------------------------------------------------------------------------
 
 def set_security_question(db:Session, member_id:int, question_id:int, answer:str) -> None:
-    q = db.query(TbMembers).filter(TbMembers.MemberID == member_id).first()
+    # Updates the user's security question and answer.
+    q = db.query(Tbmembers).filter(Tbmembers.member_id == member_id).first()
     if q:
-       q.SecurityQuestion = question_id
-       q.SecurityAnswer = answer
+       q.security_question = question_id
+       q.security_answer = answer
        db.commit()
     else:
         raise ValueError(f"Security Question Info for ID {member_id} not found.")  
 
 #-----------------------------------------------------------------------------------------------
 
-def set_deactivate_account(db:Session, member_id:int, reason:int, explanation:str, future_email:bool) -> None:
-    q = db.query(TbMembers).filter(TbMembers.MemberID == member_id).first()
+def set_deactivate_account(db:Session, member_id:int, reason:int, explanation:str, future_email:int) -> None:
+    # Deactivates a user’s account.
+    q = db.query(Tbmembers).filter(Tbmembers.member_id == member_id).first()
     if q:
-       q.Status = 3
-       q.DeactivateReason = reason
-       q.DeactivateExplanation = explanation
-       q.FutureEmails = future_email
+       q.status = 3
+       q.deactivate_reason = reason
+       q.deactivate_explanation = explanation
+       q.future_emails = future_email
        db.commit()
     else:
         raise ValueError(f"Deactivate Account for ID {member_id} not found.")  
@@ -146,44 +161,46 @@ def set_deactivate_account(db:Session, member_id:int, reason:int, explanation:st
 #-----------------------------------------------------------------------------------------------
 
 def get_profile_settings(member_id: int, db: Session) -> PrivacySearchSettings:
-    sql = text("EXEC spGetPrivacySearchSettings :MemberID") 
-    result = db.execute(sql, {"MemberID": member_id})
+    # Gets the user’s privacy and search visibility settings using stored procedure
+    sql = text("""SELECT  * FROM public.sp_get_privacy_search_settings(:member_id) """)
+    result = db.execute(sql, {"member_id": member_id})
     row = result.mappings().first()
     return PrivacySearchSettings(**row) 
 
 #-----------------------------------------------------------------------------------------------
 
 def set_profile_settings(member_id: int, db: Session,  body: PrivacySearchSettings) -> None:
-    p = db.query(TbMembersPrivacySettings).filter(TbMembersPrivacySettings.MemberID == member_id).first()
+    #Updates or inserts detailed profile privacy settings (e.g., what info is visible to others).
+    p = db.query(Tbmembersprivacysettings).filter(Tbmembersprivacysettings.member_id == member_id).first()
     if p:
-        p.MemberID = member_id
-        p.Profile = body.Profile
-        p.BasicInfo = body.BasicInfo
-        p.PersonalInfo = body.PersonalInfo
-        p.PhotosTagOfYou = body.PhotosTagOfYou
-        p.VideosTagOfYou = body.VideosTagOfYou
-        p.ContactInfo = body.ContactInfo
-        p.Education = body.Education
-        p.WorkInfo = body.WorkInfo
-        p.ImdisplayName = body.IMdisplayName
-        p.MobilePhone = body.MobilePhone
-        p.OtherPhone = body.OtherPhone
-        p.EmailAddress = body.EmailAddress
+        p.member_id = member_id
+        p.profile = body.profile
+        p.basic_info = body.basic_info
+        p.personal_info = body.personal_info
+        p.photos_tag_of_you = body.photos_tag_of_you
+        p.videos_tag_of_you = body.videos_tag_of_you
+        p.contact_info = body.contact_info
+        p.education = body.education
+        p.work_info = body.work_info
+        p.im_display_name = body.im_display_name
+        p.mobile_phone = body.mobile_phone
+        p.other_phone = body.other_phone
+        p.email_address = body.email_address
     else:
-        ps = TbMembersPrivacySettings(
-            MemberID=member_id,
-            Profile=body.Profile,
-            BasicInfo=body.BasicInfo,
-            PersonalInfo=body.PersonalInfo,
-            PhotosTagOfYou=body.PhotosTagOfYou,
-            VideosTagOfYou=body.VideosTagOfYou,
-            ContactInfo=body.ContactInfo,
-            Education=body.Education,
-            WorkInfo=body.WorkInfo,
-            ImdisplayName=body.IMdisplayName,
-            MobilePhone=body.MobilePhone,
-            OtherPhone=body.OtherPhone,
-            EmailAddress=body.EmailAddress
+        ps = Tbmembersprivacysettings(
+            member_id=member_id,
+            profile=body.profile,
+            basic_info=body.basic_info,
+            personal_info=body.personal_info,
+            photos_tag_of_you=body.photos_tag_of_you,
+            videos_tag_of_you=body.videos_tag_of_you,
+            contact_info=body.contact_info,
+            education=body.education,
+            work_info=body.work_info,
+            im_display_name=body.im_display_name,
+            mobile_phone=body.mobile_phone,
+            other_phone=body.other_phone,
+            email_address=body.email_address
         )
         db.add(ps)
     db.commit()
@@ -191,6 +208,7 @@ def set_profile_settings(member_id: int, db: Session,  body: PrivacySearchSettin
 #-----------------------------------------------------------------------------------------------
 
 def privacy_search_settings(member_id: int, db: Session) -> PrivacySearchSettings:
+    # Alias/helper to get profile settings using get_profile_settings.
     return get_profile_settings(member_id, db)
 
 #-----------------------------------------------------------------------------------------------
@@ -201,22 +219,23 @@ def set_privacy_search_settings( member_id: int, db: Session,
     view_friends_list:bool,
     view_link_to_Rquest_adding_you_as_friend:bool,
     view_link_to_send_you_msg:bool) -> None:
-    p = db.query(TbMembersPrivacySettings).filter(TbMembersPrivacySettings.MemberID == member_id).first()
+    #Updates high-level privacy settings like: who can see profile picture, friends list, and message or friend request link.
+    p = db.query(Tbmembersprivacysettings).filter(Tbmembersprivacysettings.member_id == member_id).first()
     if p:
-        p.MemberID = member_id
-        p.Visibility = visibility
-        p.ViewProfilePicture = view_profile_picture
-        p.ViewFriendsList = view_friends_list
-        p.ViewLinkToRequestAddingYouAsFriend = view_link_to_Rquest_adding_you_as_friend
-        p.ViewLinkToSendYouMsg = view_link_to_send_you_msg
+        p.member_id = member_id
+        p.visibility = visibility
+        p.view_profile_picture = view_profile_picture
+        p.view_friends_list = view_friends_list
+        p.view_link_to_request_adding_you_as_friend = view_link_to_Rquest_adding_you_as_friend
+        p.view_link_to_send_you_msg = view_link_to_send_you_msg
     else:
-        ps = TbMembersPrivacySettings(
-            MemberID = member_id,
-            Visibility = visibility,
-            ViewProfilePicture = view_profile_picture,
-            ViewFriendsList = view_friends_list,
-            ViewLinkToRequestAddingYouAsFriend = view_link_to_Rquest_adding_you_as_friend,
-            ViewLinkToSendYouMsg = view_link_to_send_you_msg
+        ps = Tbmembersprivacysettings(
+            member_id = member_id,
+            visibility = visibility,
+            view_profile_picture = view_profile_picture,
+            view_friends_list = view_friends_list,
+            view_link_to_request_adding_you_as_friend = view_link_to_Rquest_adding_you_as_friend,
+            view_link_to_send_you_msg = view_link_to_send_you_msg
         )
         db.add(ps)
     db.commit()

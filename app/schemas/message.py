@@ -2,51 +2,51 @@
 
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class Messages (BaseModel):
     """Holds the log in data."""
-    MessageID  : Optional[str] = None 
-    SentDate  : Optional[str] = None 
-    From  : Optional[str] = None 
-    SenderPicture  : Optional[str] = None 
-    Body  : Optional[str] = None 
-    Subject  : Optional[str] = None 
-    AttachmentFile  : Optional[str] = None 
-    OrginalMsg  : Optional[str] = None 
+    message_id  : Optional[str] = None 
+    sent_date  : Optional[str] = None 
+    from_: Optional[str] = Field(None, alias='from') 
+    sender_picture  : Optional[str] = None 
+    body  : Optional[str] = None 
+    subject  : Optional[str] = None 
+    attachment_file  : Optional[str] = None 
+    original_msg  : Optional[str] = None 
     
 
 class SearchMessages (BaseModel):
     """Stores message info."""
-    Attachment  : Optional[bool] = None 
-    Body  : Optional[str] = None 
-    ContactName  : Optional[str] = None 
-    ContactImage  : Optional[str] = None 
-    SenderImage  : Optional[str] = None 
-    ContactID  : Optional[int] = None 
-    FlagLevel  : Optional[int] = None 
-    ImportanceLevel  : Optional[int] = None 
-    MessageID  : Optional[int] = None 
-    MessageState  : Optional[int] = None 
-    SenderID  : Optional[str] = None 
-    Subject  : Optional[str] = None 
-    MsgDate  : Optional[datetime] = None 
-    FromID  : Optional[int] = None 
-    FirstName  : Optional[str] = None 
-    FullBody  : Optional[str] = None 
-    SenderTitle : Optional[str] = None 
+    attachment  : Optional[bool] = None 
+    body  : Optional[str] = None 
+    contact_name  : Optional[str] = None 
+    contact_image  : Optional[str] = None 
+    sender_image  : Optional[str] = None 
+    contact_id  : Optional[int] = None 
+    flag_level  : Optional[int] = None 
+    importance_level  : Optional[int] = None 
+    message_id  : Optional[int] = None 
+    message_state  : Optional[int] = None 
+    sender_id  : Optional[str] = None 
+    subject  : Optional[str] = None 
+    msg_date  : Optional[datetime] = None 
+    from_id  : Optional[int] = None 
+    first_name  : Optional[str] = None 
+    full_body  : Optional[str] = None 
+    sender_title : Optional[str] = None 
     
 class MessageInfo (BaseModel):
     """Holds the message info."""
-    To : Optional[str] = None 
-    From : Optional[str] = None 
-    Subject : Optional[str] = None 
-    Body : Optional[str] = None 
-    Attachment : Optional[str] = None 
-    OriginalMsg : Optional[str] = None 
-    MessageID : Optional[int] = None 
-    SentDate : Optional[datetime] = None 
-    SenderPicture: Optional[str] = None 
+    to : Optional[str] = None 
+    from_: Optional[str] = Field(None, alias='from')
+    subject : Optional[str] = None 
+    body : Optional[str] = None 
+    attachment : Optional[int] = None 
+    original_msg : Optional[str] = None 
+    message_id : Optional[int] = None 
+    sent_date : Optional[datetime] = None 
+    sender_picture: Optional[str] = None 
 
 
     

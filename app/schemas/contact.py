@@ -6,25 +6,25 @@ from pydantic import BaseModel
 
 class Search(BaseModel):
     """Holds searched contact info."""
-    EntityID: int
-    EntityName: Optional[str] = None
-    PicturePath: Optional[str] = None
-    Location: Optional[str] = None
-    EventDate: Optional[datetime] = None
-    Rsvp: Optional[str] = None
-    Params: Optional[str] = None
-    Description: Optional[str] = None
-    MemberCount: Optional[str] = None
-    CreatedDate: Optional[datetime] = None
-    CityState: Optional[str] = None
-    Email: Optional[str] = None
-    NameAndID: Optional[str] = None
-    StartDate: Optional[datetime] = None
-    EndDate: Optional[datetime] = None
-    LabelText: Optional[str] = None
-    ShowCancel: Optional[str] = None
-    ParamsAV: Optional[str] = None
-    Stype: Optional[str] = None  
+    entity_id: int
+    entity_name: Optional[str] = None
+    picture_path: Optional[str] = None
+    location: Optional[str] = None
+    event_date: Optional[datetime] = None
+    rsvp: Optional[str] = None
+    params: Optional[str] = None
+    description: Optional[str] = None
+    member_count: Optional[str] = None
+    created_date: Optional[datetime] = None
+    city_state: Optional[str] = None
+    email: Optional[str] = None
+    name_and_id: Optional[str] = None
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+    label_text: Optional[str] = None
+    show_cancel: Optional[str] = None
+    paramsav: Optional[str] = None
+    stype: Optional[str] = None  
 
     class Config:
         orm_mode = True
@@ -32,20 +32,20 @@ class Search(BaseModel):
 
 class MemberContacts(BaseModel):
        """Stores member contacts info."""
-       FriendName: Optional[str] = None 
-       FirstName: Optional[str] = None 
-       Location: Optional[str] = None 
-       PicturePath: Optional[str] = None 
-       ContactID: Optional[int] = None 
-       ShowType: Optional[str] = None 
-       Status: Optional[int] = None 
-       TitleDesc: Optional[str] = None 
-       Params: Optional[str] = None 
-       ParamsAV: Optional[str] = None 
-       Email: Optional[str] = None 
-       LabelText: Optional[str] = None 
-       NameAndID: Optional[str] = None 
-       ShowFollow: Optional[str] = None 
+       friend_name: Optional[str] = None 
+       first_name: Optional[str] = None 
+       location: Optional[str] = None 
+       picture_path: Optional[str] = None 
+       contact_id: Optional[int] = None 
+       show_type: Optional[str] = None 
+       status: Optional[str] = None 
+       title_desc: Optional[str] = None 
+       params: Optional[str] = None 
+       paramsav: Optional[str] = None 
+       email: Optional[str] = None 
+       label_text: Optional[str] = None 
+       Name_and_id: Optional[str] = None 
+       show_follow: Optional[str] = None 
     
        class Config:
         orm_mode = True

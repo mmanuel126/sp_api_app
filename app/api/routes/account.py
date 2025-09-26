@@ -1,4 +1,4 @@
-# app/api/routes/account.py 
+# app/api/routes/account.py --- social networking app account related endpoints
 
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -13,7 +13,7 @@ from app.utils.jwt import create_access_token
 
 router = APIRouter(prefix="/account", tags=["Account"])
 
-#-----------------------------------------------------------------------------------
+#---------------------------------------- login user (creates JWT token) -------------------------------------------
 
 @router.post(
     "/login",
@@ -28,12 +28,12 @@ def login(data: Login, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
     if not user:
-      return User()  # raise HTTPException(status_code=401, detail="Invalid email or password")
+      return User() 
 
     return user
 
 
-#-----------------------------------------------------------------------------------
+#-----------------------------------------login new registered user ------------------------------------------
 
 @router.post("/login-new-registered-user",response_model=User,
     summary="Login new registered user with a code.",
@@ -44,12 +44,12 @@ def loginNewRegisteredUser(data: NewRegisteredUser, db: Session=Depends(get_db))
     try:
         user = validate_new_registered_user(db,data)
         if not user:
-            raise HTTPException(status_code=404, detail="User not found or credentials invalid")
+            return User() # raise HTTPException(status_code=404, detail="User not found or credentials invalid")
         return user
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#--------------------------------------refresh login token---------------------------------------------
 
 @router.get("/refresh-login",
     summary="Refreshes a given token.",
@@ -67,13 +67,13 @@ def refreshLogin(refresh_token: str = Query(..., description="JWT refresh token 
         # Create a new access token
         token_data = create_access_token({"sub": email})
         return {
-            "accessToken": token_data["access_token"],
-            "expiredDate": token_data["expire_date"]
+            "access_token": token_data["access_token"],
+            "expired_date": token_data["expire_date"]
         }
     except JWTError as e:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
 
-#-----------------------------------------------------------------------------------
+#------------------------------------register a user-----------------------------------------------
 
 @router.post("/register",
     summary="Register a new user.",
@@ -89,7 +89,7 @@ def register(data: Register, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#----------------------------------reset password-------------------------------------------------
 
 @router.post("/reset-password",
     summary="Reset the passwored.",
@@ -105,7 +105,7 @@ def resetPassword(email: str,db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#--------------------------------check if reset password code expired--------------------------------------------------
 
 @router.post("/is-reset-code-expired",
     summary="Check if reset code expired.",
@@ -121,7 +121,7 @@ def isResetCodeExpired(code: str, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#-----------------------------------change password------------------------------------------------
 
 @router.post("/change-password",
     summary="Changes the password.",
@@ -136,7 +136,8 @@ def changePassword(new_password: str,
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#----------------------------------set member status (registered, active, deactivate)-------------------------------------------------
+
 @router.put("/set-member-status/{member_id}/{status}",
     summary="Set member status.",
     description="this endpoint will set the status (active=2, deactivated=3, newly-register=1) for the member id."

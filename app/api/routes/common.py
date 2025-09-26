@@ -1,11 +1,10 @@
-# app/api/routes/common.py 
+# app/api/routes/common.py - social networking app common related endpoints
 
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pytest import Session
 from app.auth.dependencies import get_current_user
 from app.crud.common import get_ads, get_recent_news, get_schools_by_state, get_sports, get_states
-from app.db.models.sp_db_models import TbStates
 from app.db.session import get_db
 import logging
 from app.schemas.common import Ads, RecentNews, Schools, Sports, States
@@ -16,7 +15,7 @@ router = APIRouter(prefix="/common", tags=["Common"])
 logger = logging.getLogger("my_logger")
 logging.basicConfig(level=logging.ERROR)
 
-#-----------------------------------------------------------------------------------
+#-------------------------------get U.S. States----------------------------------------------------
 
 @router.get("/states",response_model=List[States],
     summary="Gets the list of states",
@@ -31,7 +30,7 @@ def states(db: Session = Depends(get_db),current_user: str = Depends(get_current
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#---------------------------------logs erors to a file--------------------------------------------------
 
 @router.post("/logs", summary="logs into a file an error message and stack trace.", 
              description="This endpoint logs the specified log info such as error msg, and stack trace into a file.")
@@ -42,7 +41,7 @@ def log_error(message: str = Query(...), stack: str = Query(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#----------------------------------sports list-------------------------------------------------
 
 @router.get("/sports",response_model=List[Sports],
     summary="Gets the list of sports",
@@ -57,7 +56,7 @@ def sports(db: Session = Depends(get_db), current_user: str = Depends(get_curren
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#----------------------------------list of schools-------------------------------------------------
 
 @router.get("/schools",response_model=List[Schools],
     summary="Gets the list of schools",
@@ -76,7 +75,8 @@ def schools(
         return sc
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-#-----------------------------------------------------------------------------------
+    
+#-------------------------------------list of Ads----------------------------------------------
 
 @router.get("/ads",response_model=List[Ads],
     summary="Gets the list of Ads.",
@@ -94,7 +94,8 @@ def ads(
         return ad
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-#-----------------------------------------------------------------------------------
+    
+#--------------------------------------list of recent news---------------------------------------------
 
 @router.get("/news",response_model=List[RecentNews],
     summary="Gets the list of recent news.",
@@ -109,5 +110,4 @@ def news(db: Session = Depends(get_db), current_user: str = Depends(get_current_
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
 

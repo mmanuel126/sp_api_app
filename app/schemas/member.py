@@ -4,87 +4,87 @@ from typing import Optional
 from pydantic import BaseModel
 
 class Posts(BaseModel):
-    PostID: Optional[int] = None
-    Title: Optional[str] = None
-    Description: Optional[str] = None
-    DatePosted: Optional[str] = None
-    AttachFile: Optional[str] = None
-    MemberID: Optional[int] = None
-    PicturePath: Optional[str] = None
-    MemberName: Optional[str] = None
-    FirstName: Optional[str] = None
-    ChildPostCnt: Optional[str] = None
-    LikeCounter :Optional[int] = None
+    post_id: Optional[int] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    date_posted: Optional[str] = None
+    attach_file: Optional[str] = None
+    member_id: Optional[int] = None
+    picture_path: Optional[str] = None
+    member_name: Optional[str] = None
+    first_name: Optional[str] = None
+    child_post_count: Optional[str] = None
+    like_counter :Optional[int] = None
 
 class PostResponses(BaseModel):
-    PostResponseID : Optional[int] = None
-    PostID  :Optional[int] = None
-    Description: Optional[str] = None
-    DateResponded: Optional[str] = None
-    MemberID: Optional[int] = None
-    MemberName: Optional[str] = None
-    FirstName: Optional[str] = None
-    PicturePath: Optional[str] = None
+    post_response_id : Optional[int] = None
+    post_id  :Optional[int] = None
+    description: Optional[str] = None
+    date_responded: Optional[str] = None
+    member_id: Optional[int] = None
+    member_name: Optional[str] = None
+    first_name: Optional[str] = None
+    picture_path: Optional[str] = None
 
 class GeneralInfo (BaseModel):
-    MemberID: Optional[str] = None
-    FirstName: Optional[str] = None
-    MiddleName: Optional[str] = None
-    LastName: Optional[str] = None
-    Sex: Optional[str] = None
-    ShowSexInProfile: Optional[bool] = None
-    DOBMonth: Optional[str] = None
-    DOBDay: Optional[str] = None
-    DOBYear: Optional[str] = None
-    ShowDOBType: Optional[bool] = None
-    Hometown: Optional[str] = None
-    HomeNeighborhood: Optional[str] = None
-    CurrentStatus: Optional[str] = None
-    InterestedInType: Optional[str] = None
-    LookingForEmployment: Optional[bool] = None
-    LookingForRecruitment: Optional[bool] = None
-    LookingForPartnership: Optional[bool] = None
-    LookingForNetworking: Optional[bool] = None
-    PicturePath: Optional[str] = None
-    JoinedDate: Optional[str] = None
-    CurrentCity: Optional[str] = None
-    TitleDesc: Optional[str] = None
-    Sport: Optional[str] = None
-    Bio: Optional[str] = None
-    Height: Optional[str] = None
-    Weight: Optional[str] = None
-    LeftRightHandFoot: Optional[str] = None
-    PreferredPosition: Optional[str] = None
-    SecondaryPosition: Optional[str] = None
-    InterestedDesc: Optional[str] = None
+    member_id: Optional[str] = None
+    first_name: Optional[str] = None
+    middle_name: Optional[str] = None
+    last_name: Optional[str] = None
+    sex: Optional[str] = None
+    show_sex_in_profile: Optional[bool] = None
+    dob_month: Optional[str] = None
+    dob_day: Optional[str] = None
+    dob_year: Optional[str] = None
+    show_dob_type: Optional[bool] = None
+    home_town: Optional[str] = None
+    home_neighborhood: Optional[str] = None
+    current_status: Optional[str] = None
+    interested_in_type: Optional[str] = None
+    looking_for_employment: Optional[bool] = None
+    looking_for_recruitment: Optional[bool] = None
+    looking_for_partnership: Optional[bool] = None
+    looking_for_networking: Optional[bool] = None
+    picture_path: Optional[str] = None
+    joined_date: Optional[str] = None
+    current_city: Optional[str] = None
+    title_desc: Optional[str] = None
+    sport: Optional[str] = None
+    bio: Optional[str] = None
+    height: Optional[str] = None
+    weight: Optional[str] = None
+    left_right_hand_foot: Optional[str] = None
+    preferred_position: Optional[str] = None
+    secondary_position: Optional[str] = None
+    interested_desc: Optional[str] = None
 
 class EducationInfo(BaseModel):
-    Degree: Optional[str] = ""
-    DegreeTypeID: Optional[str] = ""   # Even if it's numeric in DB, treat as str if used that way
-    SchoolAddress: Optional[str] = ""
-    SchoolID: Optional[int] = None     # Accept None, not ""
-    SchoolImage: Optional[str] = ""
-    SchoolName: Optional[str] = ""
-    YearClass: Optional[str] = ""
-    SchoolType: Optional[str] = ""     # Cast to str in code
-    Major: Optional[str] = ""
-    SportLevelType: Optional[str] = ""
+    degree: Optional[str] = ""
+    degree_type_id: Optional[str] = ""   # Even if it's numeric in DB, treat as str if used that way
+    school_address: Optional[str] = ""
+    school_id: Optional[int] = None     # Accept None, not ""
+    school_image: Optional[str] = ""
+    school_name: Optional[str] = ""
+    year_class: Optional[str] = ""
+    school_type: Optional[str] = ""     # Cast to str in code
+    major: Optional[str] = ""
+    sport_level_type: Optional[str] = ""
 
     class Config:
         orm_mode = True
 
 class YoutubeVideos(BaseModel): 
-    Etag  : Optional[str] = None
-    Id  : Optional[str] = None
-    Title : Optional[str] = None
-    Description : Optional[str] = None
-    DefaultThumbnail  : Optional[str] = None
-    DefaultThumbnailHeight  : Optional[str] = None
-    DefaultThumbnailWidth  : Optional[str] = None
-    PublishedAt  : Optional[str] = None
+    etag  : Optional[str] = None
+    id  : Optional[str] = None
+    title : Optional[str] = None
+    description : Optional[str] = None
+    defaultThumbnail  : Optional[str] = None
+    defaultThumbnailHeight  : Optional[str] = None
+    defaultThumbnailWidth  : Optional[str] = None
+    publishedAt  : Optional[str] = None
 
 class YoutubePlayList(BaseModel):
-    Etag : Optional[str] = None
+    etag : Optional[str] = None
     id : Optional[str] = None
     title : Optional[str] = None
     description : Optional[str] = None
@@ -93,36 +93,37 @@ class YoutubePlayList(BaseModel):
     defaultThumbnailWidth : Optional[str] = None
 
 class ContactInfo(BaseModel):
-    MemberID: Optional[int]= None
-    Email  : Optional[str] = None
-    OtherEmail  : Optional[str] = None
-    Facebook  : Optional[str] = None        
-    Instagram  : Optional[str] = None
-    Twitter  : Optional[str] = None
-    Website  : Optional[str] = None
-    HomePhone  : Optional[str] = None
-    CellPhone  : Optional[str] = None
-    Address  : Optional[str] = None
-    City  : Optional[str] = None
-    Neighborhood  : Optional[str] = None
-    State  : Optional[str] = None
-    Zip  : Optional[str] = None
-    ShowAddress  : Optional[bool] = None
-    ShowEmailToMembers  : Optional[bool] = None 
-    ShowCellPhone  : Optional[bool] = None
-    ShowHomePhone  : Optional[bool] = None
+    member_id: Optional[int]= None
+    email  : Optional[str] = None
+    other_email  : Optional[str] = None
+    facebook  : Optional[str] = None        
+    instagram  : Optional[str] = None
+    twitter  : Optional[str] = None
+    website  : Optional[str] = None
+    home_phone  : Optional[str] = None
+    cell_phone  : Optional[str] = None
+    other_phone : Optional[str] = None
+    address  : Optional[str] = None
+    city  : Optional[str] = None
+    neighborhood  : Optional[str] = None
+    state  : Optional[str] = None
+    zip  : Optional[str] = None
+    show_address  : Optional[bool] = None
+    show_email_to_members  : Optional[bool] = None 
+    show_cell_phone  : Optional[bool] = None
+    show_home_phone  : Optional[bool] = None
 
     class Config:
         orm_mode = True
 
 class InstagramURL(BaseModel):
-     MemberID : Optional[int] = None 
-     InstagramURL  : Optional[str] = None 
+     member_id : Optional[int] = None 
+     instagram_url  : Optional[str] = None 
 
 
 class YoutubeChannel(BaseModel):
-    MemberID : Optional[int] = None 
-    ChannelID  : Optional[str] = None 
+    member_id : Optional[int] = None 
+    channel_id  : Optional[str] = None 
 
 
 

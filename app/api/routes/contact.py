@@ -1,4 +1,4 @@
-# app/api/routes/contact.py 
+# app/api/routes/contact.py - social networking app contact related endpoints
 
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -11,7 +11,7 @@ from app.schemas.contact import MemberContacts, Search
 
 router = APIRouter(prefix="/contact", tags=["Contact"])
 
-#-----------------------------------------------------------------------------------
+#---------------------------------contact search query --------------------------------------------------
 
 @router.get("/search-results",response_model=List[Search],
     summary="returns list of contacts by search text",
@@ -26,7 +26,7 @@ def search_results(db: Session = Depends(get_db),current_user: str = Depends(get
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#------------------------------------list of members user is following-----------------------------------------------
 
 @router.get("/people-iam-following",response_model=List[MemberContacts],
     summary="returns list of people i follow.",
@@ -41,7 +41,7 @@ def people_iam_following(db: Session = Depends(get_db),current_user: str = Depen
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#----------------------------------list of members whose following the user-------------------------------------------------
 
 @router.get("/whose-following-me",response_model=List[MemberContacts],
     summary="returns list of people following me.",
@@ -56,7 +56,7 @@ def whose_following_me(db: Session = Depends(get_db),current_user: str = Depends
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#----------------------------------post to follow a member-------------------------------------------------
 
 @router.post("/follow-member",
     summary="post to follow member given member id and contact id.",
@@ -72,7 +72,7 @@ def follow_member(db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#--------------------------------post to unfollow member---------------------------------------------------
 
 @router.post("/unfollow-member",
     summary="post to un-follow member given member id and contact id.",
@@ -88,7 +88,7 @@ def unfollow_member(db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#----------------------------------post send a contact request-------------------------------------------------
 
 @router.post("/send-request",
     summary="post to send request given member id and contact id.",
@@ -105,7 +105,7 @@ def send_request(db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#-----------------------------------list of contacts------------------------------------------------
 
 @router.get("/contacts",response_model=List[MemberContacts],
     summary="returns list of them member's contacts.",
@@ -120,7 +120,7 @@ def contacts(db: Session = Depends(get_db),current_user: str = Depends(get_curre
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#----------------------------------search member contacts-------------------------------------------------
 
 @router.get("/search-member-contacts",response_model=List[MemberContacts],
     summary="returns list of the member's searched contacts.",
@@ -138,7 +138,7 @@ def search_member_contacts(db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#--------------------------------------remove a user's contact---------------------------------------------
 
 @router.delete("/delete-contact",
     summary="remove a contact from a member's contact list.",
@@ -154,7 +154,7 @@ def delete_contact(db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#------------------------------------accept a member request for contact-----------------------------------------------
 
 @router.post("/accept-request",
     summary="accepst request from contact id.",
@@ -170,7 +170,7 @@ def accept_request(db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#---------------------------------------reject a member request for contact--------------------------------------------
 
 @router.post("/reject-request",
     summary="reject request from a contact id.",
@@ -186,7 +186,7 @@ def reject_request(db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#---------------------------------------list of requests for contact--------------------------------------------
 
 @router.get("/requests",response_model=List[MemberContacts],
     summary="returns list of member's contact requests.",
@@ -201,7 +201,7 @@ def requests(db: Session = Depends(get_db),current_user: str = Depends(get_curre
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#-----------------------------------list of searched contacts------------------------------------------------
 
 @router.get("/search-contacts",response_model=List[MemberContacts],
     summary="returns list of contacts given a user id and search text.",
@@ -220,11 +220,11 @@ def search_contacts(db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#-------------------------------------suggestions listing----------------------------------------------
 
 @router.get("/suggestions",response_model=List[MemberContacts],
-    summary="returns list of member's contact requests.",
-    description="This endpoint returns a list of the member's contact requests."
+    summary="returns list of contacts suggested for a member .",
+    description="This endpoint returns list of contacts suggested for a member."
 )
 def suggestions(db: Session = Depends(get_db),current_user: str = Depends(get_current_user), member_id:int = Query(...)):
     try:

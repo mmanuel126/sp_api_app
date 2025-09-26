@@ -1,21 +1,19 @@
-# app/api/routes/setting.py
+# app/api/routes/setting.py - social networking app settings related endpoints
 
 import shutil
 from fastapi import APIRouter, Body, Depends, File, HTTPException, Path, Query, UploadFile
 from fastapi.responses import JSONResponse
 from pytest import Session
-
 from app.auth.dependencies import get_current_user
 from app.crud.setting import get_name_info, get_notifications, get_profile_settings, privacy_search_settings, set_deactivate_account, set_privacy_search_settings, set_profile_settings, set_security_question, set_update_email_info, set_update_name_info, set_update_notifications, set_update_password_info
 from app.db.session import get_db
 from app.schemas.setting import MemberNameInfo, NotificationsSetting, PrivacySearchSettings
 
-
 router = APIRouter(prefix="/setting", tags=["Setting"])
 
 UPLOAD_FOLDER = "images/members"
 
-#-----------------------------------------------------------------------------------
+#-----------------------------------get member name info-----------------------------------------------
 
 @router.get("/name-info/{member_id}",response_model=MemberNameInfo,
     summary="Get the member name info.",
@@ -30,7 +28,7 @@ def name_info(member_id:int, db: Session = Depends(get_db),current_user: str = D
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#-----------------------------get member notification settings------------------------------------------------------
 
 @router.get("/notifications/{member_id}",response_model=NotificationsSetting,
     summary="Get the member notifications.",
@@ -45,7 +43,7 @@ def notifications(member_id:int, db: Session = Depends(get_db),current_user: str
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#-------------------------------updates the member name info----------------------------------------------------
 
 @router.put("/update-name-info/{member_id}",
     summary="Updates the member name info.",
@@ -63,7 +61,7 @@ def update_name_info(member_id:int, db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#---------------------------------update notification settings--------------------------------------------------
 
 @router.put("/update-notifications/{member_id}",
     summary="Updates the member notifications.",
@@ -79,7 +77,7 @@ def update_notifications(member_id:int, db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#-------------------------------------update email info----------------------------------------------
 
 @router.put("/update-email-info/{member_id}",
     summary="Updates the member email.",
@@ -95,7 +93,7 @@ def update_email_info(member_id:int, db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#------------------------------------save password info-----------------------------------------------
 
 @router.put("/save-password-info/{member_id}",
     summary="change the member's password.",
@@ -111,7 +109,7 @@ def save_password_info(member_id:int, db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#-------------------------------------save security question----------------------------------------------
 
 @router.put("/save-security-question/{member_id}",
     summary="save the member's security questions.",
@@ -128,7 +126,7 @@ def save_security_question(member_id:int, db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#---------------------------------------deactivate account--------------------------------------------
 
 @router.post("/deactivate-account/{member_id}",
     summary="Deactivate member account.",
@@ -138,7 +136,7 @@ def deactivate_account(member_id:int, db: Session = Depends(get_db),
                   current_user: str = Depends(get_current_user), 
                  reason: int = Query(...),
                  explanation: str = Query(...),
-                 future_email: bool = Query(...)
+                 future_email: int = Query(...)
                   ):
     try:
         set_deactivate_account(db, member_id, reason, explanation, future_email)
@@ -146,7 +144,7 @@ def deactivate_account(member_id:int, db: Session = Depends(get_db),
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#----------------------------------------get the profile settings-------------------------------------------
 
 @router.get("/profile-settings/{member_id}",response_model=PrivacySearchSettings,
     summary="Get the member profile settings.",
@@ -161,7 +159,7 @@ def profile_settings(member_id:int, db: Session = Depends(get_db),current_user: 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#----------------------------------save the profile settings-------------------------------------------------
 
 @router.put("/save-profile-settings/{member_id}",
     summary="Saves the member profile settings.",
@@ -174,7 +172,7 @@ def save_profile_settings(member_id:int,body: PrivacySearchSettings, db: Session
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#--------------------------------------privacy search settings---------------------------------------------
 
 @router.get("/privacy-search-settings/{member_id}",response_model=PrivacySearchSettings,
     summary="Get the member privacy search settings.",
@@ -189,16 +187,16 @@ def profile_search_settings(member_id:int, db: Session = Depends(get_db),current
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#-----------------------------------save privacy search settings------------------------------------------------
 
 @router.put("/save-privacy-search-settings/{member_id}",
     summary="Saves the privacy search settings.",
     description="This endpoint saves the members privacy search settings."
 )
 def profile_settings(member_id:int, db: Session = Depends(get_db),current_user: str = Depends(get_current_user),
-            visibility:int = Query(...), view_profile_picture:bool= Query(...), 
-        view_friends_list:bool = Query(...), view_link_to_request_adding_you_as_friend:bool= Query(...),
-            view_link_to_send_you_msg:bool = Query(...)):
+            visibility:int = Query(...), view_profile_picture:int= Query(...), 
+        view_friends_list:int = Query(...), view_link_to_request_adding_you_as_friend:int= Query(...),
+            view_link_to_send_you_msg:int = Query(...)):
     try:
         set_privacy_search_settings(member_id, db,
             visibility, view_profile_picture, 
@@ -208,7 +206,7 @@ def profile_settings(member_id:int, db: Session = Depends(get_db),current_user: 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#---------------------------------------upload photo--------------------------------------------
 
 @router.post("/upload-photo/{member_id}")
 async def upload_profile_photo(

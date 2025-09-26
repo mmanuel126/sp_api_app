@@ -1,4 +1,4 @@
-# app/api/routes/member.py 
+# app/api/routes/member.py  - social networking app member related endpoints
 
 from typing import List
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
@@ -6,13 +6,12 @@ from pytest import Session
 
 from app.auth.dependencies import get_current_user
 from app.crud.member import add_member_school, check_is_following_contact, check_is_friend_by_contact_id, create_member_post, create_member_post_response, get_instagram_url, get_member_contact_info, get_member_education_info, get_member_general_info, get_recent_post_responses, get_recent_posts, get_videos_list, get_youtube_channel, get_youtube_playlist, set_increment_post_like_counter, set_instagram_url, set_member_contact_info, set_member_general_info, set_remove_school, set_youtube_channel, update_member_school
-from app.db.models.sp_db_models import TbMemberProfileContactInfo
 from app.db.session import get_db
 from app.schemas.member import ContactInfo, EducationInfo, GeneralInfo, PostResponses, Posts, YoutubeChannel, YoutubePlayList, YoutubeVideos, InstagramURL
 
 router = APIRouter(prefix="/member", tags=["Member"])
 
-#-------------------------------  post related routes ----------------------------------------------------
+#------------------------------- member posts list----------------------------------------------------
 
 @router.get("/posts/{member_id}",response_model=List[Posts],
     summary="Gets the list of recent posts.",
@@ -27,7 +26,7 @@ def recent_posts(member_id:int, db: Session = Depends(get_db),current_user: str 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#-----------------------------------post response list------------------------------------------------
 
 @router.get("/post-responses/{post_id}",response_model=List[PostResponses],
     summary="Gets the list of recent posts responses.",
@@ -42,7 +41,7 @@ def recent_post_respponses(post_id:int, db: Session = Depends(get_db),current_us
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#--------------------------------increment post like counter---------------------------------------------------
 
 @router.post("/increment-post-like-counter/{post_id}",
     summary="incremenet post like counter for post ID.",
@@ -55,7 +54,7 @@ def increment_post_like_counter(post_id:int, db: Session = Depends(get_db),curre
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#----------------------------------creatig a post-------------------------------------------------
 
 @router.post("/create-post/{member_id}",
     summary="Creates post for member ID.",
@@ -70,11 +69,11 @@ def create_post(member_id:int, db: Session = Depends(get_db),current_user: str =
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#---------------------------------create post response--------------------------------------------------
 
 @router.post("/create-post-response/{member_id}/{post_id}",
     summary="Creates post response for member ID.",
-    description="This endpoint creates a post response for member ID and post ID"
+    description="This endpoint creates a post response for member ID and post ID."
 )
 def create_post_response(member_id:int, post_id:int, db: Session = Depends(get_db),current_user: str = Depends(get_current_user), post_msg:str=Query(...)):
     try:
@@ -85,7 +84,7 @@ def create_post_response(member_id:int, post_id:int, db: Session = Depends(get_d
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#--------------------------------------member profile related routes ---------------------------------------------
+#--------------------------------------get member general info ---------------------------------------------
 
 @router.get("/general-info/{member_id}",response_model=GeneralInfo,
     summary="Gets the member profile general info.",
@@ -100,7 +99,7 @@ def member_general_info(member_id:int, db: Session = Depends(get_db),current_use
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#-------------------------------------get contact info----------------------------------------------
 
 @router.get("/contact-info/{member_id}",response_model=ContactInfo,
     summary="Gets the member contact info.",
@@ -115,7 +114,7 @@ def member_contact_info(member_id:int, db: Session = Depends(get_db),current_use
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#----------------------------------------get memeber education info-------------------------------------------
 
 @router.get("/education-info/{member_id}",response_model=List[EducationInfo],
     summary="Gets the member education info.",
@@ -130,7 +129,7 @@ def member_education_info(member_id:int, db: Session = Depends(get_db),current_u
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#-------------------------------------get member youtube playlist----------------------------------------------
 
 @router.get("/video-playlist/{member_id}",response_model=List[YoutubePlayList],
     summary="Gets u tube vidoe playlist",
@@ -145,7 +144,7 @@ def youtube_playlist(member_id:int, db: Session = Depends(get_db),current_user: 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))   
      
-#-----------------------------------------------------------------------------------
+#---------------------------------------get member youtbue videos for a playlist--------------------------------------------
 
 @router.get("/youtube-videos/{playlist_id}",response_model=List[YoutubeVideos],
     summary="Gets the video list for a playerlist id.",
@@ -160,7 +159,7 @@ def youtube_videos(playlist_id:str, db: Session = Depends(get_db),current_user: 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#-----------------------------------------check if member is a contact of another------------------------------------------
 
 @router.get("/is-friend-by-contact-id/{member_id}/{contact_id}",response_model=bool,
     summary="checks if member is a contact by contact id.",
@@ -173,7 +172,7 @@ def is_friend_by_contact_id(member_id, contact_id:int, db: Session = Depends(get
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-#-----------------------------------------------------------------------------------
+#--------------------------------------check if member is following another--------------------------------------------
 
 @router.get("/is-following-contact/{member_id}/{contact_id}",response_model=bool,
     summary="checks if member is following contact id.",
@@ -186,7 +185,7 @@ def is_following_contact(member_id, contact_id:int, db: Session = Depends(get_db
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))    
     
-#-----------------------------------------------------------------------------------
+#--------------------------------saves general info---------------------------------------------------
 
 @router.post("/general-info",
     summary="Saves or update the member general info.",
@@ -202,7 +201,7 @@ def saves_member_general_info(
      except Exception as e:
          raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#-------------------------------------saves contact info----------------------------------------------
 
 @router.post("/contact-info",
     summary="Saves or update the member contact info.",
@@ -215,7 +214,7 @@ def saves_member_contact_info(db: Session = Depends(get_db),current_user: str = 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#-----------------------------------------------------------------------------------
+#-------------------------------------gets intagram url----------------------------------------------
 
 @router.get("/instagram-url/{member_id}",response_model=str,
     summary="Gets instagram url for the member id.",
@@ -230,7 +229,7 @@ def instagram_url(member_id:int, db: Session = Depends(get_db),current_user: str
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))    
 
-#-----------------------------------------------------------------------------------
+#-------------------------------------saves instagram url----------------------------------------------
 
 @router.put("/instagram-url",
     summary="Saves or update the member instagram url.",
@@ -243,6 +242,7 @@ def saves_instagram_url(data: InstagramURL = Body(...), db: Session = Depends(ge
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))    
     
+#-------------------------------------gets utube channel id----------------------------------------------
 
 @router.get("/youtube-channel/{member_id}",response_model=str,
     summary="Gets the youtube channel id for the member id.",
@@ -257,11 +257,11 @@ def youtube_channel(member_id:int, db: Session = Depends(get_db),current_user: s
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))    
 
-#-----------------------------------------------------------------------------------
+#--------------------------------------saves utube channel id ---------------------------------------------
 
 @router.put("/youtube-channel",
-    summary="Saves or update the member instagram url.",
-    description="This endpoint saves or update the member instagram url."
+    summary="Saves or update the member youtube channel id.",
+    description="This endpoint saves or update the youtube channel id."
 )
 def saves_youtube_channel(db: Session = Depends(get_db),current_user: str = Depends(get_current_user), data: YoutubeChannel = Body(...)):
     try:
@@ -270,7 +270,7 @@ def saves_youtube_channel(db: Session = Depends(get_db),current_user: str = Depe
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))   
     
-#-----------------------------------------------------------------------------------
+#----------------------------------------add member school info-------------------------------------------
 
 @router.post("/add-school/{member_id}",
     summary="Add a school to list of schools for the member id.",
@@ -283,7 +283,7 @@ def add_school(member_id:int, db: Session = Depends(get_db),current_user: str = 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) 
     
-#-----------------------------------------------------------------------------------
+#---------------------------------------update member school info--------------------------------------------
 
 @router.put("/update-school/{member_id}",
     summary="Update school info for the member id.",
@@ -296,7 +296,7 @@ def update_school(member_id:int, db: Session = Depends(get_db),current_user: str
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) 
     
-#-----------------------------------------------------------------------------------
+#------------------------------------------remvoe member school-----------------------------------------
 
 @router.delete("/remove-school",
     summary="Removes a school for the member id.",

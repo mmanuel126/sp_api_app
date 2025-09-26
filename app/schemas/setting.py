@@ -5,11 +5,11 @@ from pydantic import BaseModel
 
 class NotificationsSetting (BaseModel):
     """Holds the system notifications to member info."""
-    MemberID : int
-    SendMsg : bool
-    AddAsFriend : bool
-    ConfirmFriendShipRequest : bool
-    RepliesToYourHelpQuest : bool
+    member_id : int
+    send_msg : int
+    add_as_friend : int
+    confirm_friendship_request : int
+    replies_to_your_help_quest : int
     
 class PasswordData (BaseModel):
     """Holds the password info for member."""
@@ -18,34 +18,34 @@ class PasswordData (BaseModel):
 
 class MemberNameInfo(BaseModel): 
     """Holds member name info data."""
-    FirstName  : str
-    LastName  : str
-    MiddleName  : str
-    Email  : str
-    SecurityQuestion  : str
-    SecurityAnswer  : str
-    PassWord  : str
+    first_name  : str
+    last_name  : str
+    middle_name  : str
+    email  : str
+    security_question  : str
+    security_answer  : str
+    password  : str
  
 class PrivacySearchSettings(BaseModel):
     """Holds the privacy search settings data."""
-    ID: Optional[int] = None
-    Profile: Optional[int] = None
-    BasicInfo: Optional[int] = None
-    PersonalInfo: Optional[int] = None
-    PhotosTagOfYou: Optional[int] = None
-    VideosTagOfYou: Optional[int] = None
-    ContactInfo: Optional[int] = None
-    Education: Optional[int] = None
-    WorkInfo: Optional[int] = None
-    IMdisplayName: Optional[int] = None
-    MobilePhone: Optional[int] = None
-    OtherPhone: Optional[int] = None
-    EmailAddress: Optional[int] = None
-    Visibility: Optional[int] = None
-    ViewProfilePicture: Optional[bool] = None
-    ViewFriendsList: Optional[bool] = None
-    ViewLinksToRequestAddingYouAsFriend: Optional[bool] = None
-    ViewLinkTSendYouMsg: Optional[bool] = None
-    Email: Optional[str] = None
+    id: Optional[int] = None
+    profile: Optional[int] = None
+    basic_info: Optional[int] = None
+    personal_info: Optional[int] = None
+    photos_tag_of_you: Optional[int] = None
+    videos_tag_of_you: Optional[int] = None
+    contact_info: Optional[int] = None
+    education: Optional[int] = None
+    work_info: Optional[int] = None
+    im_display_name: Optional[int] = None
+    mobile_phone: Optional[int] = None
+    other_phone: Optional[int] = None
+    email_address: Optional[int] = None
+    visibility: Optional[int] = None
+    view_profile_picture: Optional[int] = None
+    view_friends_list: Optional[int] = None
+    view_Link_to_request_adding_you_as_friend: Optional[int] = None
+    view_link_to_send_you_msg: Optional[int] = None
+    email: Optional[str] = None
 
 

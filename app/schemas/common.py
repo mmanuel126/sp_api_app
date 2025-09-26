@@ -6,13 +6,13 @@ from pydantic import BaseModel
 class Sports(BaseModel):
     """Stores list of sports."""
     id: int
-    Name: str
+    name: str
 
 class States(BaseModel):
     """Stores list of states."""
-    StateID: int
-    Name: str
-    Abbreviation: str
+    state_id: int
+    name: str
+    abbreviation: str
 
     class Config:
         orm_mode = True  # <-- VERY IMPORTANT for SQLAlchemy integration
@@ -20,8 +20,8 @@ class States(BaseModel):
 
 class Schools(BaseModel):
     """Stores list of schools."""
-    SchoolID: int
-    SchoolName: str
+    school_id: int
+    school_name: str
 
     class Config:
         orm_mode = True  
@@ -29,14 +29,14 @@ class Schools(BaseModel):
 
 class Ads(BaseModel):
     """Holds list of advertisement."""
-    ID: int
-    Name: str
-    HeaderText: str
-    PostingDate: datetime
-    TextField: str
-    NavigateURL: str
-    ImageUrl:str
-    Type: str
+    id: int
+    name: str
+    headertext: str
+    postingdate: datetime
+    textfield: str
+    navigateurl: str
+    imageurl:str
+    type: str
 
     class Config:
         orm_mode = True  
@@ -44,13 +44,13 @@ class Ads(BaseModel):
 
 class RecentNews(BaseModel):
     """Hold list of recent news."""
-    ID :int
-    Name :str
-    HeaderText :str
-    PostingDate :datetime
-    TextField :str
-    NavigateURL :str
-    ImageUrl :str
+    id :int
+    name :str
+    header_text :str
+    posting_date :datetime
+    text_field :str
+    navigate_url :str
+    image_url :str
 
     class Config:
         orm_mode = True 

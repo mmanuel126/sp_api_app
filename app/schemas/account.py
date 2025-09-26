@@ -11,29 +11,29 @@ class Login(BaseModel):
 
 class User(BaseModel):
     """ Holds the logged in user info."""
-    memberID: Optional[str] = None
+    member_id: Optional[str] = None
     name: Optional[str] = None
     email: Optional[str] = None
-    picturePath: Optional[str] = None
+    picture_path: Optional[str] = None
     title: Optional[str] = None
-    currentStatus: Optional[str] = None
-    accessToken: Optional[str] = None
-    expiredDate: Optional[str] = None
-    refreshToken: Optional[str] = None
-    refreshExpireDate: Optional[str] = None
+    current_status: Optional[str] = None
+    access_token: Optional[str] = None
+    expired_date: Optional[str] = None
+    refresh_token: Optional[str] = None
+    refresh_expire_date: Optional[str] = None
    
 
 class Register (BaseModel):
     """Stores registered user info."""
-    firstName: str
-    lastName: str
+    first_name: str
+    last_name: str
     email: EmailStr
     password: str
     day: str
     month: str
     year: str
     gender: str
-    profileType: str    
+    profile_type: str    
 
 class NewRegisteredUser (BaseModel):
     """Stores new registered user info."""
@@ -42,6 +42,6 @@ class NewRegisteredUser (BaseModel):
 
 class CodeAndNameForgotPwdModel(BaseModel):
     """holds code and name forgot password data"""
-    codeID: str
-    firstName: str
+    code_id: str
+    first_name: str
 
