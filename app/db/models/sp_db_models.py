@@ -502,7 +502,7 @@ class Tbmemberprofilecontactinfo(Tbmembers):
     )
 
     member_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    email: Mapped[Optional[str]] = mapped_column(String(100))
+    #email: Mapped[Optional[str]] = mapped_column(String(100))
     show_email_to_members: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(1, 0))
     other_email: Mapped[Optional[str]] = mapped_column(String(100))
     facebook: Mapped[Optional[str]] = mapped_column(String(100))
